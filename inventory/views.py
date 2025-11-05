@@ -68,13 +68,13 @@ def performlogin(request):
             return redirect("login")
 
 
-@login_required(login_url="login")
+@login_required(login_url='/login/')
 def logoutview(request):
     logout(request)
     messages.info(request,"Berhasil Logout")
     return redirect('login')
 
-@login_required(login_url="login")
+@login_required(login_url='/login/')
 def performlogout(request):
     logout(request)
     return redirect("login")
@@ -84,7 +84,7 @@ def _in_group(user, name):
 
 
 '''DASHBOARD/BASE'''
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic', 'finance', 'manajer'])
 def base(request):
     bahanobj = models.bahan.objects.all().count()
@@ -162,7 +162,7 @@ def read_supplier(request):
     })
     
 #CREATE SUPPLIER
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def create_supplier(request):
     if request.method == 'GET':
@@ -190,7 +190,7 @@ def create_supplier(request):
     return redirect('read_supplier')
 
 #UPDATE SUPPLIER
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def update_supplier(request, id):
     try:
@@ -219,7 +219,7 @@ def update_supplier(request, id):
         return redirect('read_supplier')
     
 #DELETE SUPPLIER
-@login_required(login_url="login")
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def delete_supplier(request ,id):
     getsupplierobj = models.supplier.objects.get(id_supplier = id)
@@ -240,7 +240,7 @@ def read_customer(request):
     })
     
 #CREATE CUSTOMER
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def create_customer(request):
     if request.method == 'GET':
@@ -268,7 +268,7 @@ def create_customer(request):
     return redirect('read_customer')
 
 #UPDATE CUSTOMER
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def update_customer(request, id):
     try:
@@ -297,7 +297,7 @@ def update_customer(request, id):
         return redirect('read_customer')
 
 #DELETE CUSTOMER
-@login_required(login_url="login")
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def delete_customer(request ,id):
     getcustomerobj = models.customer.objects.get(id_customer = id)
@@ -307,7 +307,7 @@ def delete_customer(request ,id):
 
 '''BAHAN'''
 #READ BAHAN
-@login_required(login_url="login")
+@login_required(login_url='/login/')
 @role_required(['ppic','finance','produksi'])
 def read_bahan(request):
     # --- Subquery: ambil SO terakhir per bahan (tanggal & qty fisik) ---
@@ -407,7 +407,7 @@ def read_bahan(request):
 
     
 #CREATE BAHAN
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def create_bahan(request):
     if request.method == 'GET':
@@ -432,7 +432,7 @@ def create_bahan(request):
     return redirect('read_bahan')
 
 #UPDATE BAHAN
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def update_bahan(request, id):
     try:
@@ -460,7 +460,7 @@ def update_bahan(request, id):
         return redirect('read_bahan')
 
 #DELETE BAHAN
-@login_required(login_url="login")
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def delete_bahan(request ,id):
     getbahanobj = models.bahan.objects.get(id_bahan = id)
@@ -470,7 +470,7 @@ def delete_bahan(request ,id):
 
 '''PRODUK'''
 #READ PRODUK
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic','finance','produksi','qc'])
 def read_produk(request):
     # --- Subquery: ambil SO terakhir per produk (tanggal & qty fisik) ---
@@ -554,7 +554,7 @@ def read_produk(request):
         
 
 #CREATE PRODUK
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def create_produk(request):
     if request.method == 'GET':
@@ -585,7 +585,7 @@ def create_produk(request):
     return redirect('read_produk')
 
 #UPDATE PRODUK
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def update_produk(request, id):
     try:
@@ -615,7 +615,7 @@ def update_produk(request, id):
         return redirect('read_produk')
 
 #DELETE PRODUK
-@login_required(login_url="login")
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def delete_produk(request ,id):
     getprodukobj = models.produk.objects.get(id_produk = id)
@@ -625,7 +625,7 @@ def delete_produk(request ,id):
 
 '''PEMESANAN'''
 #READ PEMESANAN
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic','finance'])
 def read_pemesanan(request):
     pemesananobj = (models.pemesanan.objects
@@ -689,7 +689,7 @@ def read_detail_bahan(request):
         'tmin': tmin, 'tmax': tmax, 'supplier_sel': supplier, 'bahan_sel': bahan,
     })
 
-@login_required(login_url="login")
+@login_required(login_url='/login/')
 @role_required(['ppic','finance'])
 def read_detail_produk(request):
     qs = (models.detail_pemesanan_produk.objects
@@ -720,7 +720,7 @@ def read_detail_produk(request):
 
     
 #CREATE PEMESANAN
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def create_pemesanan(request):
     supplierobj = models.supplier.objects.all().order_by('nama_supplier')
@@ -810,7 +810,7 @@ def create_pemesanan(request):
     return redirect('read_pemesanan')
 
 #UPDATE PEMESANAN
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def update_pemesanan(request, id):
     detail = get_object_or_404(models.pemesanan, id_pemesanan=id)
@@ -887,7 +887,7 @@ def update_pemesanan(request, id):
         'bahanobj': bahanobj,
     })
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def update_detail_pemesanan_bahan(request, id_detail):
     detail = get_object_or_404(models.detail_pemesanan_bahan, id_detail_pemesanan=id_detail)
@@ -908,7 +908,7 @@ def update_detail_pemesanan_bahan(request, id_detail):
     })
 
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def update_detail_pemesanan_produk(request, id_detail):
     detail = get_object_or_404(models.detail_pemesanan_produk, id_detail_pemesanan=id_detail)
@@ -966,7 +966,7 @@ def update_detail_pemesanan_produk(request, id_detail):
 
 #DELETE PEMESANAN
 # Hapus seluruh dokumen PEMESANAN (parent + semua detail)
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def delete_pemesanan(request, id_pemesanan):
     if request.method != 'POST':
@@ -979,7 +979,7 @@ def delete_pemesanan(request, id_pemesanan):
     return redirect('read_pemesanan')
 
 # Hapus satu DETAIL BAHAN; kalau habis semua detail (bahan+produk), hapus parent
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def delete_detail_pemesanan_bahan(request, id_detail):
     if request.method != 'POST':
@@ -1001,7 +1001,7 @@ def delete_detail_pemesanan_bahan(request, id_detail):
 
 
 # Hapus satu DETAIL PRODUK; kalau habis semua detail (bahan+produk), hapus parent
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def delete_detail_pemesanan_produk(request, id_detail):
     if request.method != 'POST':
@@ -1023,7 +1023,7 @@ def delete_detail_pemesanan_produk(request, id_detail):
 
 
 '''PRODUKSI''' 
-@login_required(login_url="login")
+@login_required(login_url='/login/')
 @role_required(['ppic', 'finance', 'produksi','qc'])
 def read_produksi(request):
   
@@ -1071,7 +1071,7 @@ def read_produksi(request):
     })
 
 #CREATE PRODUKSI
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['produksi', 'ppic'])
 def create_produksi(request):
     produkobj = models.produk.objects.all()
@@ -1139,7 +1139,7 @@ def create_produksi(request):
 
     
 #UPDATE PRODUKSI
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['produksi', 'ppic'])
 def update_produksi(request, id):
     getdetailobj = get_object_or_404(models.detail_produksi, id_detail_produksi=id)
@@ -1170,7 +1170,7 @@ def update_produksi(request, id):
     messages.success(request, "Data produksi berhasil diperbarui.")
     return redirect('read_produksi')
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['qc', 'ppic'])
 def update_qc_produksi(request, id):
     d = get_object_or_404(models.detail_produksi, id_detail_produksi=id)
@@ -1201,7 +1201,7 @@ def update_qc_produksi(request, id):
     messages.success(request, "Data QC (reject & finished goods) berhasil diperbarui.")
     return redirect('read_produksi')
     
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['qc', 'ppic'])
 @require_POST
 def set_qc_status(request, id_detail):
@@ -1240,7 +1240,7 @@ def set_qc_status(request, id_detail):
 
 
 #DELETE PRODUKSI
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['produksi', 'ppic'])
 def delete_produksi(request, id_produksi=None, id_detail=None):
     # A) Hapus seluruh PRODUKSI (cascade detail)
@@ -1327,7 +1327,7 @@ def read_pengiriman(request):
 
 
 #CREATE PENGIRIMAN
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def create_pengiriman(request):
     produkobj = models.produk.objects.all().order_by('nama_produk')
@@ -1370,7 +1370,7 @@ def create_pengiriman(request):
 
 
 #UPDATE PENGIRIMAN
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def update_pengiriman(request, id):
     detail = get_object_or_404(models.detail_pengiriman, id_detail_pengiriman=id)
@@ -1408,7 +1408,7 @@ def update_pengiriman(request, id):
 
 # DELETE (bisa hapus seluruh pengiriman ATAU 1 detail)
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def delete_pengiriman(request, id_pengiriman=None, id_detail=None):
     """
@@ -1450,7 +1450,7 @@ def delete_pengiriman(request, id_pengiriman=None, id_detail=None):
 
 '''STOK OPNAME'''
 #READ STOK OPNAME
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic','finance'])
 def read_stok_opname(request):
     qs = (models.stok_opname.objects
@@ -1468,7 +1468,7 @@ def read_stok_opname(request):
     })
 
 #detail stok opname bahan per tanggal
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic','finance'])
 def read_detail_so_bahan(request, id_stok_opname):
     so = get_object_or_404(
@@ -1481,7 +1481,7 @@ def read_detail_so_bahan(request, id_stok_opname):
     })
 
 #detail stok opname produk per tanggal
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic','finance'])
 def read_detail_so_produk(request, id_stok_opname):
     so = get_object_or_404(
@@ -1525,7 +1525,7 @@ def get_stok_sistem_bahan_until(bahan_id, sampai_tanggal):
 
     return int(stok_awal + total_masuk - total_keluar)
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic','finance'])
 def read_so_bahan(request):
     # --- filter basic ---
@@ -1603,7 +1603,7 @@ def get_stok_sistem_produk_until(produk_id, sampai_tanggal):
     stok_awal = 0
     return int(stok_awal + fg - kirim)
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic','finance'])
 def read_so_produk(request):
     tmin = request.GET.get('tmin')
@@ -1644,7 +1644,7 @@ def read_so_produk(request):
 
 
 #CREATE STOK OPNAME
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def create_stok_opname(request):
     bahanobj  = models.bahan.objects.all().order_by('nama_bahan')
@@ -1710,7 +1710,7 @@ def create_stok_opname(request):
     return redirect('read_stok_opname')
 
 #UPDATE STOK OPNAME
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def update_stok_opname(request, id):
     so = get_object_or_404(models.stok_opname, id_stok_opname=id)
@@ -1732,7 +1732,7 @@ def update_stok_opname(request, id):
     messages.success(request, "Data Stok Opname Berhasil Diperbarui")
     return redirect('read_stok_opname')
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def update_detail_so_bahan(request, id_detail):
     d = get_object_or_404(models.detail_so_bahan, id_detail_so_bahan=id_detail)
@@ -1752,7 +1752,7 @@ def update_detail_so_bahan(request, id_detail):
         messages.error(request, "Gagal menyimpan detail.")
     return redirect('read_detail_so_bahan', id_stok_opname=d.id_stok_opname.id_stok_opname)
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def update_detail_so_produk(request, id_detail):
     d = get_object_or_404(models.detail_so_produk, id_detail_so_produk=id_detail)
@@ -1773,7 +1773,7 @@ def update_detail_so_produk(request, id_detail):
     return redirect('read_detail_so_produk', id_stok_opname=d.id_stok_opname.id_stok_opname)
 
 #DELETE STOK OPNAME
-@login_required(login_url="login")
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def delete_stok_opname(request, id):
     if request.method != 'POST':
@@ -1785,7 +1785,7 @@ def delete_stok_opname(request, id):
 
     return redirect('read_stok_opname')
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def delete_detail_so_bahan(request, id_detail):
     if request.method != 'POST':
@@ -1799,7 +1799,7 @@ def delete_detail_so_bahan(request, id_detail):
 
     return redirect('read_detail_so_bahan', id_stok_opname=parent.id_stok_opname)
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def delete_detail_so_produk(request, id_detail):
     if request.method != 'POST':
@@ -1907,7 +1907,7 @@ def _wrap_eoe_from_pemesanan(detail_obj, *, default_capacity=55200):
 
 '''PALLET'''
 #READ PALLET (daftar manual & auto wrap)
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic','produksi'])
 def read_pallet(request):
     tmin = request.GET.get('tmin')
@@ -2009,7 +2009,7 @@ def read_pallet(request):
 
 
 #Logika Manual Wrap
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic','produksi'])
 @require_POST
 def wrap_manual(request, id_produk):
@@ -2043,7 +2043,7 @@ def wrap_manual(request, id_produk):
 
 
 '''KEBUTUHAN PALLET'''
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def read_kebutuhan_pallet(request):
     rows = (models.kebutuhan_pallet.objects
@@ -2051,7 +2051,7 @@ def read_kebutuhan_pallet(request):
             .order_by('id_bahan__nama_bahan'))
     return render(request, 'pallet/read_kebutuhan_pallet.html', {'rows': rows})
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def create_kebutuhan_pallet(request):
     bahanobj = models.bahan.objects.filter(jenis_bahan__icontains='pembantu').order_by('nama_bahan')
@@ -2073,7 +2073,7 @@ def create_kebutuhan_pallet(request):
     messages.success(request, "Aturan kebutuhan berhasil ditambahkan.")
     return redirect('read_kebutuhan_pallet')
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 def update_kebutuhan_pallet(request, id):
     row = get_object_or_404(models.kebutuhan_pallet, id_kebutuhan=id)
@@ -2098,7 +2098,7 @@ def update_kebutuhan_pallet(request, id):
     messages.success(request, "Aturan kebutuhan diperbarui.")
     return redirect('read_kebutuhan_pallet')
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic'])
 @require_POST
 def delete_kebutuhan_pallet(request, id):
@@ -2349,7 +2349,7 @@ def _penyesuaian_bahan_dalam_periode(start_date, end_date, bahan):
 # LAPORAN REKAPITULASI STOK #
 # ========================= #
 
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic', 'manajer'])
 def laporan_rekapitulasi_stok(request):
     # baca rentang tanggal (GET)
@@ -2532,7 +2532,7 @@ def laporan_rekapitulasi_stok(request):
 # =========================
 # LAPORAN REKAPITULASI: PDF
 # =========================
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic', 'manajer'])
 def laporan_rekapitulasi_stok_pdf(request):
     # ambil parameter
@@ -3593,7 +3593,7 @@ def _build_so_rows_for_date_like_rekap_sistem(start_date, tgl):
 # =========================
 # LAPORAN STOK OPNAME : HTML
 # =========================
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic', 'manajer'])
 def laporan_stok_opname(request):
     start_date = parse_date(request.GET.get('start_date') or '')
@@ -3633,7 +3633,7 @@ def laporan_stok_opname(request):
 # =========================
 # LAPORAN STOK OPNAME : PDF
 # =========================
-@login_required(login_url='login')
+@login_required(login_url='/login/')
 @role_required(['ppic', 'manajer'])
 def laporan_stok_opname_pdf(request):
     start_date = parse_date(request.GET.get('start_date') or '')

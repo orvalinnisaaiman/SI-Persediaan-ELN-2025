@@ -150,3 +150,6 @@ if os.environ.get('VERCEL'):
     from eln.wsgi import application
     
 STATIC_ROOT = BASE_DIR/ 'staticfiles'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/base/'   # sesuaikan tujuan sesudah login
+
