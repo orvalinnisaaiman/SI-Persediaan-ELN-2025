@@ -12,7 +12,11 @@ from django.forms import DateInput
 import json
 from django.db.models import F,Q,Sum,Value, Prefetch, Subquery, OuterRef
 import math
-from weasyprint import HTML
+# try:
+#     from weasyprint import HTML
+# except Exception:
+#     HTML = None
+
 from django.template.loader import render_to_string
 import tempfile
 from django.urls import reverse
@@ -2682,7 +2686,7 @@ def laporan_rekapitulasi_stok_pdf(request):
         'start_date': start_date,
         'end_date': end_date,
     }
-
+    from weasyprint import HTML
     html_string = render_to_string('laporan/laporan_rekapitulasi_stok_pdf.html', context)
     pdf_bytes = HTML(string=html_string).write_pdf()
 

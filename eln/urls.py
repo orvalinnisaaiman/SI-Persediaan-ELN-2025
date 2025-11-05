@@ -1,19 +1,20 @@
+# eln/urls.py
 from django.contrib import admin
 from django.urls import path, include, reverse, NoReverseMatch
 from django.shortcuts import redirect
 
 def root_redirect(request):
-    # urutan prioritas: ganti sesuai kebiasaanmu
+    # urutkan sesuai target kamu
     for name in ('base', 'login'):
         try:
             return redirect(reverse(name))
         except NoReverseMatch:
             pass
-    # fallback terakhir kalau nama URL di atas nggak ada
-    return redirect('/accounts/login/')
+    # fallback terakhir (ubah kalau perlu)
+    return redirect('/login/')
 
 urlpatterns = [
     path('', root_redirect, name='root'),
-    path('', include('inventory.urls')),   # sesuaikan app utama
+    path('', include('inventory.urls')),   # sesuaikan kalau app utamamu beda
     path('admin/', admin.site.urls),
 ]
