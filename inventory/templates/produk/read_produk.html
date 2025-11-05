@@ -1,0 +1,84 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Data Produk</h3>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="card-title mb-0">Daftar Produk</h4>
+      {% if is_ppic %}
+      <a href="{% url 'create_produk' %}" class="btn btn-sm btn-success text-white">
+        <i class="ti-plus mr-1"></i> Tambah Produk
+      </a>
+      {% endif %}
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">No</th>
+            {% comment %} <th scope="col">ID Produk</th> {% endcomment %}
+            <th scope="col">Nama Produk</th>
+            <th scope="col">Jenis Produk</th>
+            <th scope="col">Kapasitas Pallet</th>
+            <th scope="col">Stok</th>
+            <th scope="col">Safety Stock</th>        
+            <th scope="col">Status</th>
+            {% if is_ppic %}
+            <th class="text-center">Action</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in produkobj %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            {% comment %} <td>{{ i.id_produk }}</td> {% endcomment %}
+            <td>{{ i.nama_produk }}</td>
+            <td>{{ i.jenis_produk }}</td>
+            <td>{{ i.kapasitas_pallet }}</td>
+            <td>{{ i.stok}}</td>
+            <td>{{ i.safety_stock }}</td>
+            <td>
+              {% if i.safety_ok %}
+                <span class="badge badge-success">Aman</span>
+              {% else %}
+                <span class="badge badge-danger">Tidak Aman</span>
+              {% endif %}
+              {# Opsional: tampilkan selisih #}
+              <small class="text-muted d-block">
+                Selisih: {{ i.safety_gap }}
+              </small>
+            </td>
+            
+            {% if is_ppic %}
+            <td>
+              <a href="{% url 'update_produk' i.id_produk %}" 
+                 class="btn btn-sm btn-outline-primary">
+                 <i class="ti-pencil"></i> Edit
+              </a>
+              <a href="{% url 'delete_produk' i.id_produk %}"
+                class="btn btn-sm btn-outline-danger btn-delete"
+                data-nama="{{ i.nama_produk }}">
+                <i class="ti-trash"></i> Hapus
+                </a>
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted">Belum ada data produk.</td>
+          </tr>
+          {% endfor %}
+        
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

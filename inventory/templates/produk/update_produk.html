@@ -1,0 +1,90 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load l10n %}
+
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Update Produk</h3>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title mb-4">Form Ubah Produk</h4>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-3" role="alert">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Expect context: 'produk' (instance) dan 'stok' (int, read-only) -->
+    <form method="post" class="forms-sample">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="nama_produk">Nama Produk</label>
+        <input type="text"
+               class="form-control"
+               id="nama_produk"
+               name="nama_produk"
+               value="{{ getprodukobj.nama_produk }}"  
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="jenis_produk">Jenis Produk</label>
+        <select class="form-control" id="jenis_produk" name="jenis_produk" required>
+          <option value="" >-- Pilih Jenis Produk --</option>
+          <option value="Can 307"     {% if getprodukobj.jenis_produk == 'Can 307' %}selected{% endif %}>Can 307</option>
+          <option value="Can 211"     {% if getprodukobj.jenis_produk == 'Can 211' %}selected{% endif %}>Can 211</option>
+          <option value="Can 311"     {% if getprodukobj.jenis_produk == 'Can 311' %}selected{% endif %}>Can 311</option>
+          <option value="Can 202"     {% if getprodukobj.jenis_produk == 'Can 202' %}selected{% endif %}>Can 202</option>
+          <option value="Clubcan"     {% if getprodukobj.jenis_produk == 'Clubcan' %}selected{% endif %}>Clubcan</option>
+          <option value="EOE 307"     {% if getprodukobj.jenis_produk == 'EOE 307' %}selected{% endif %}>EOE 307</option>
+          <option value="EOE 311"     {% if getprodukobj.jenis_produk == 'EOE 311' %}selected{% endif %}>EOE 311</option>
+          <option value="EOE 200"     {% if getprodukobj.jenis_produk == 'EOE 200' %}selected{% endif %}>EOE 200</option>
+          <option value="EOE 209"     {% if getprodukobj.jenis_produk == 'EOE 209' %}selected{% endif %}>EOE 209</option>
+          <option value="Bottom End 202"     {% if getprodukobj.jenis_produk == 'Bottom End 202' %}selected{% endif %}>Bottom End 202</option>
+          <option value="EOE Clubcan" {% if getprodukobj.jenis_produk == 'EOE Clubcan' %}selected{% endif %}>EOE Clubcan</option>
+        </select>
+      </div>
+
+        <div class="form-group">
+          <label for="kapasitas_pallet">Kapasitas Pallet</label>
+          <input type="number"
+                  class="form-control"
+                  name="kapasitas_pallet"
+                  min="1"
+                  value="{{ getprodukobj.kapasitas_pallet|unlocalize }}"
+                  required>
+        </div>
+
+        <!-- STOK: hasil perhitungan, tidak bisa diedit -->
+        <div class="form-group">
+          <label>Stok (otomatis)</label>
+          <input type="text" class="form-control" value="{{ stok }}" readonly>
+          <small class="form-text">
+            Stok dihitung dari total produksi (masuk) dikurangi total pengiriman (keluar).
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="nama_produk">Safety Stock (pcs)</label>
+          <input type="text"
+                  class="form-control"
+                  name="safety_stock"
+                  min="1"
+                  value="{{ getprodukobj.safety_stock|unlocalize }}"
+                  required>
+        </div>
+
+        <div class="d-flex justify-content-end">
+          <a href="{% url 'read_produk' %}" class="btn btn-light mr-2">Batal</a>
+          <button type="submit" class="btn btn-success">
+            <i class="ti-check mr-1"></i> Simpan Perubahan
+          </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

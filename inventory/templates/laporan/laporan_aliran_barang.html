@@ -1,0 +1,87 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="page-header">
+  <h3 class="page-title">Laporan Aliran Barang</h3>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <form method="get" class="form-inline">
+      <div class="form-group mr-2 mb-2">
+        <label class="mr-2">Dari</label>
+        <input type="date" class="form-control" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+      </div>
+      <div class="form-group mr-2 mb-2">
+        <label class="mr-2">Sampai</label>
+        <input type="date" class="form-control" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+      </div>
+      <button class="btn btn-primary text-white ml-2 mb-2"><i class="ti-search mr-1"></i>Filter</button>
+
+      {% if pdf_url %}
+      <a href="{{ pdf_url }}" class="btn btn-success ml-2 mb-2">
+        <i class="ti-export mr-1"></i> Export PDF
+      </a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+{% if start_date and end_date %}
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+          <thead class="thead-light">
+            <tr>
+              <th class="text-center" style="width:40px;">No</th>
+              <th class="text-center" style="width:120px;">Tanggal</th>
+              <th>Nama</th>
+              <th style="width:160px;">Jenis</th>
+              <th class="text-center" style="width:80px;">Satuan</th>
+              <th class="text-right" style="width:100px;">Masuk</th>
+              <th class="text-right" style="width:100px;">Keluar</th>
+              <th class="text-right" style="width:110px;">Sisa Stok</th>
+              <th style="width:260px;">Keterangan</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% if groups and groups|length > 0 %}
+            {% for g in groups %}
+              {% with g.rows|length as rlen %}
+                {% for row in g.rows %}
+                <tr>
+                  {% if forloop.first %}
+                    <td class="text-center align-middle" rowspan="{{ rlen }}">{{ forloop.parentloop.counter }}</td>
+                    <td class="text-center align-middle" rowspan="{{ rlen }}">{{ g.tanggal }}</td>
+                  {% endif %}
+                  <td>{{ row.nama }}</td>
+                  <td>{{ row.jenis }}</td>
+                  <td class="text-center">{{ row.satuan }}</td>
+                  <td class="text-right">{{ row.masuk }}</td>
+                  <td class="text-right">{{ row.keluar }}</td>
+                  <td class="text-right font-weight-bold">{{ row.sisa }}</td>
+                  <td>{{ row.ket }}</td>
+                </tr>
+                {% endfor %}
+              {% endwith %}
+            {% empty %}
+              <tr><td colspan="9" class="text-center">Tidak ada data pada periode ini.</td></tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="9" class="text-center">Tidak ada data pada periode ini.</td></tr>
+          {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% else %}
+  <div class="alert alert-info">
+    Silakan pilih periode untuk menampilkan data.
+  </div>
+{% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load l10n %}
+
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Data Stok Opname Produk</h3>
+
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <!-- Filter -->
+    <form method="get" class="mb-3">
+      <div class="form-row">
+        <div class="col-md-3 mb-2">
+          <label class="mb-1">Tanggal Mulai</label>
+          <input type="date" class="form-control" name="tmin" value="{{ tmin|default_if_none:'' }}">
+        </div>
+        <div class="col-md-3 mb-2">
+          <label class="mb-1">Tanggal Akhir</label>
+          <input type="date" class="form-control" name="tmax" value="{{ tmax|default_if_none:'' }}">
+        </div>
+        <div class="col-md-4 mb-2">
+          <label class="mb-1">Produk</label>
+          <select class="form-control" name="produk">
+            <option value="">— Semua Produk —</option>
+            {% for p in produkobj %}
+              <option value="{{ p.id_produk }}" {% if produk_sel == p.id_produk|stringformat:"s" %}selected{% endif %}>
+                {{ p.nama_produk }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2 mb-2 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary btn-sm me-2"><i class="ti-search mr-1"></i>Filter</button>
+          <a href="{% url 'read_so_bahan' %}" class="btn btn-light btn-sm me2"><i class="ti-reload mr-1"></i>Reset</a>
+        </div>
+      </div>
+    </form>
+
+    <!-- Tabel -->
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th class="text-center" style="width:72px;">No</th>
+            <th class="text-center" style="width:150px;">Tanggal SO</th>
+            <th>Produk</th>
+            <th class="text-center" style="width:160px;">Stok Fisik</th>
+            <th class="text-center" style="width:220px;">Penyesuaian</th>
+            {% if is_ppic %}<th class="text-center" style="width:180px;">Action</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in page_obj.object_list %}
+          <tr>
+            <td class="text-center">{{ page_obj.start_index|add:forloop.counter0 }}</td>
+            <td class="text-center">{{ d.id_stok_opname.tanggal_stok_opname }}</td>
+            <td>{{ d.id_produk.nama_produk }}</td>
+            <td class="text-center">{{ d.stok_fisik_produk|unlocalize }}</td>
+            <td class="text-center">
+              {% with delta=d.penyesuaian|default_if_none:0 delta_abs=d.penyesuaian_abs|default_if_none:0 sistem=d.stok_sistem|default_if_none:0 %}
+                {% if delta == 0 %}
+                  <span class="badge badge-secondary">Sesuai (0)</span>
+                  <div class="small text-muted">Sistem: {{ sistem }}</div>
+                {% elif delta > 0 %}
+                  <span class="badge badge-success">Tambah {{ delta }}</span>
+                  <div class="small text-muted">Sistem: {{ sistem }}</div>
+                {% else %}
+                  <span class="badge badge-danger">Kurang {{ delta_abs }}</span>
+                  <div class="small text-muted">Sistem: {{ sistem }}</div>
+                {% endif %}
+              {% endwith %}
+            </td>
+            {% if is_ppic %}
+            <td class="text-center">
+              <a href="{% url 'update_detail_so_produk' d.id_detail_so_produk %}"
+                 class="btn btn-xs btn-outline-primary">
+                <i class="ti-pencil"></i> Edit
+              </a>
+              <button type="button"
+                      class="btn btn-xs btn-outline-danger btn-delete"
+                      data-url="{% url 'delete_detail_so_produk' d.id_detail_so_produk %}?next={{ request.get_full_path|urlencode }}"
+                      data-nama="Detail #{{ d.id_detail_so_produk }} ({{ d.id_produk.nama_produk }})">
+                <i class="ti-trash"></i> Hapus
+              </button>
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="{% if is_ppic %}6{% else %}5{% endif %}" class="text-center text-muted">
+              Tidak ada data untuk filter saat ini.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-2">
+      <ul class="pagination justify-content-end mb-0">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if tmin %}&tmin={{ tmin }}{% endif %}{% if tmax %}&tmax={{ tmax }}{% endif %}{% if produk_sel %}&produk={{ produk_sel }}{% endif %}">
+            &laquo;
+          </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+        {% endif %}
+
+        <li class="page-item disabled">
+          <span class="page-link">
+            Hal {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+          </span>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if tmin %}&tmin={{ tmin }}{% endif %}{% if tmax %}&tmax={{ tmax }}{% endif %}{% if produk_sel %}&produk={{ produk_sel }}{% endif %}">
+            &raquo;
+          </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+</div>
+
+{# Modal konfirmasi universal #}
+<div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title title">Konfirmasi</h5>
+      <button type="button" class="close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form id="deleteForm" method="post">{% csrf_token %}
+      <div class="modal-body">Tindakan ini tidak dapat dibatalkan.</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light btn-cancel" data-bs-dismiss="modal" data-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-danger">Ya, hapus</button>
+      </div>
+    </form>
+  </div></div>
+</div>
+
+{% endblock %}

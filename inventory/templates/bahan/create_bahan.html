@@ -1,0 +1,43 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Create Bahan</h3>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title mb-4">Form Tambah Bahan</h4>
+
+    <form method="post" class="forms-sample">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="nama_bahan">Nama Bahan</label>
+        <input type="text"
+               class="form-control"
+               id="nama_bahan"
+               name="nama_bahan"
+               placeholder="Masukkan tipe bahan (contoh: TFS 0.2 x 837 x 785 (SC) / GL)"
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="jenis_bahan">Jenis Bahan</label>
+        <select class="form-control" id="jenis_bahan" name="jenis_bahan" required>
+            <option value="">-- Pilih Jenis Bahan --</option>
+            <option value="Bahan Baku">Bahan Baku</option>
+            <option value="Bahan Pembantu">Bahan Pembantu</option>
+        </select>
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <a href="{% url 'read_bahan' %}" class="btn btn-light mr-2">Batal</a>
+        <button type="submit" class="btn btn-success text-white">
+          <i class="ti-check mr-1"></i>Simpan bahan</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

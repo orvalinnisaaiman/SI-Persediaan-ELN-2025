@@ -1,0 +1,51 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Create Customer</h3>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title mb-4">Form Tambah Customer</h4>
+
+    <form method="post" class="forms-sample">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="nama_customer">Nama Customer</label>
+        <input type="text"
+               class="form-control"
+               id="nama_customer"
+               name="nama_customer"
+               placeholder="Masukkan nama customer"
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="nomor_telepon_customer">Nomor Telepon Customer</label>
+        <input type="number"
+               class="form-control"
+               id="nomor_telepon_customer"
+               name="nomor_telepon_customer"
+               placeholder="Masukkan nomor telepon">
+      </div>
+
+      <div class="form-group">
+        <label for="alamat_customer">Alamat Customer</label>
+        <textarea class="form-control"
+                  id="alamat_customer"
+                  name="alamat_customer"
+                  rows="3"
+                  placeholder="Masukkan alamat lengkap customer"></textarea>
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <a href="{% url 'read_customer' %}" class="btn btn-light mr-2">Batal</a>
+        <button type="submit" class="btn btn-success text-white"><i class="ti-check mr-1"></i>Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

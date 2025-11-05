@@ -1,0 +1,108 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+  <!-- Card Ringkasan -->
+  <div class="col-md-3 grid-margin stretch-card">
+    <div class="card bg-primary text-white">
+      <div class="card-body">
+        <h4 class="card-title">Total Barang Jadi</h4>
+        <h2>{{ produkobj }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 grid-margin stretch-card">
+    <div class="card bg-success text-white">
+      <div class="card-body">
+        <h4 class="card-title">Total Bahan</h4>
+        <h2>{{ bahanobj }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 grid-margin stretch-card">
+    <div class="card bg-warning text-white">
+      <div class="card-body">
+        <h4 class="card-title">Total Stok Barang Jadi</h4>
+        <h2>{{ total_stok_produk }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 grid-margin stretch-card">
+    <div class="card bg-info text-white">
+      <div class="card-body">
+        <h4 class="card-title">Total Stok Bahan Pembantu</h4>
+        <h2>{{ total_stok_bahan_pembantu }}</h2>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Grafik Stok Barang Jadi -->
+<div class="row">
+  <div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title mb-4">Stok Barang Jadi</h4>
+        <canvas id="produkChart" height="100"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Grafik Stok Bahan Pembantu -->
+<div class="row mt-4">
+  <div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title mb-4">Stok Bahan Pembantu</h4>
+        <canvas id="bahanChart" height="100"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // === Grafik Barang Jadi ===
+  const produkCtx = document.getElementById('produkChart');
+  new Chart(produkCtx, {
+    type: 'bar',
+    data: {
+      labels: {{ produk_labels|safe }},
+      datasets: [{
+        label: 'Jumlah Stok',
+        data: {{ produk_stok|safe }},
+        backgroundColor: 'rgba(255, 206, 86, 0.6)',
+        borderColor: 'rgba(255, 206, 86, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: { y: { beginAtZero: true } },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // === Grafik Bahan Pembantu ===
+  const bahanCtx = document.getElementById('bahanChart');
+  new Chart(bahanCtx, {
+    type: 'bar',
+    data: {
+      labels: {{ bahan_labels|safe }},
+      datasets: [{
+        label: 'Jumlah Stok',
+        data: {{ bahan_stok|safe }},
+        backgroundColor: 'rgba(255, 206, 86, 0.6)',
+        borderColor: 'rgba(255, 206, 86, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: { y: { beginAtZero: true } },
+      plugins: { legend: { display: false } }
+    }
+  });
+</script>
+{% endblock %}

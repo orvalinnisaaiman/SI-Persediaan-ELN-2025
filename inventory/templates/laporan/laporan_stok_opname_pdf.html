@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Laporan Stok Opname</title>
+  <style>
+    @page { size: A4; margin: 10mm 10mm; }
+    body { font-family: sans-serif; font-size: 10px; }
+    h1 { font-size: 16px; margin: 0 0 6mm 0; }
+    h2 { font-size: 13px; margin: 6mm 0 3mm 0; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { border: 1px solid #444; padding: 3px 4px; vertical-align: top; }
+    th { background: #f2f2f2; }
+    td, th { word-break: break-word; overflow-wrap: anywhere; }
+    thead { display: table-header-group; }
+    tr { page-break-inside: avoid; }
+    .num { text-align: right; }
+    .center { text-align: center; }
+  </style>
+</head>
+<body>
+  <h1>Laporan Stok Opname</h1>
+  <div style="margin-bottom:6mm;">Periode: {{ start_date }} s.d. {{ end_date }}</div>
+
+  {% if groups %}
+    {% for g in groups %}
+      <h2>Tanggal: {{ g.tanggal|date:"d M Y" }}</h2>
+
+      <!-- PRODUK -->
+      <h3>Produk</h3>
+      <table>
+        <thead>
+          <tr>
+            <th class="center">No</th>
+            <th>Nama Produk</th>
+            <th class="num">Stok Awal</th>
+            <th class="num">Masuk</th>
+            <th class="num">Keluar</th>
+            <th class="num">Stok Akhir (Sistem)</th>
+            <th class="num">Stok Fisik</th>
+            <th class="num">Selisih</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in g.produk_rows %}
+          <tr>
+            <td class="center">{{ forloop.counter }}</td>
+            <td>{{ r.nama }}</td>
+            <td class="num">{{ r.stok_awal }}</td>
+            <td class="num">{{ r.masuk }}</td>
+            <td class="num">{{ r.keluar }}</td>
+            <td class="num">{{ r.stok_akhir }}</td>
+            <td class="num">{{ r.stok_fisik }}</td>
+            <td class="num">{{ r.selisih }}</td>
+          </tr>
+          {% empty %}<tr><td colspan="8">Tidak ada data produk.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+
+      <!-- BAHAN BAKU -->
+      <h3 style="margin-top:6mm;">Bahan Baku</h3>
+      <table>
+        <thead>
+          <tr>
+            <th class="center">No</th>
+            <th>Nama Bahan Baku</th>
+            <th class="num">Stok Awal</th>
+            <th class="num">Masuk</th>
+            <th class="num">Keluar</th>
+            <th class="num">Stok Akhir (Sistem)</th>
+            <th class="num">Stok Fisik</th>
+            <th class="num">Selisih</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in g.baku_rows %}
+          <tr>
+            <td class="center">{{ forloop.counter }}</td>
+            <td>{{ r.nama }}</td>
+            <td class="num">{{ r.stok_awal }}</td>
+            <td class="num">{{ r.masuk }}</td>
+            <td class="num">{{ r.keluar }}</td>
+            <td class="num">{{ r.stok_akhir }}</td>
+            <td class="num">{{ r.stok_fisik }}</td>
+            <td class="num">{{ r.selisih }}</td>
+          </tr>
+          {% empty %}<tr><td colspan="8">Tidak ada data bahan baku.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+
+      <!-- BAHAN PEMBANTU -->
+      <h3 style="margin-top:6mm;">Bahan Pembantu</h3>
+      <table>
+        <thead>
+          <tr>
+            <th class="center">No</th>
+            <th>Nama Bahan Pembantu</th>
+            <th class="num">Stok Awal</th>
+            <th class="num">Masuk</th>
+            <th class="num">Keluar</th>
+            <th class="num">Stok Akhir (Sistem)</th>
+            <th class="num">Stok Fisik</th>
+            <th class="num">Selisih</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in g.pembantu_rows %}
+          <tr>
+            <td class="center">{{ forloop.counter }}</td>
+            <td>{{ r.nama }}</td>
+            <td class="num">{{ r.stok_awal }}</td>
+            <td class="num">{{ r.masuk }}</td>
+            <td class="num">{{ r.keluar }}</td>
+            <td class="num">{{ r.stok_akhir }}</td>
+            <td class="num">{{ r.stok_fisik }}</td>
+            <td class="num">{{ r.selisih }}</td>
+          </tr>
+          {% empty %}<tr><td colspan="8">Tidak ada data bahan pembantu.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+
+      {% if not forloop.last %}
+        <div style="page-break-after: always;"></div>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <p>Tidak ada dokumen stok opname pada periode ini.</p>
+  {% endif %}
+</body>
+</html>

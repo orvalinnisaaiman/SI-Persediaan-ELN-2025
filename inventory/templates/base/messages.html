@@ -1,0 +1,102 @@
+{% if messages %}
+  <div class="alert-container">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-outline alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        {{ message|safe }}
+      </div>
+    {% endfor %}
+  </div>
+
+  <style>
+    /* ===== posisi alert: fixed di kanan atas, ga ganggu judul ===== */
+    .alert-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      width: 350px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeInDown 0.4s ease;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== style alert clean ===== */
+    .alert {
+      background: #fff !important;
+      border: 1px solid #ddd !important;
+      border-left: 6px solid var(--alert-color, #999);
+      color: var(--alert-color, #333) !important;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      border-radius: 10px;
+      padding: 10px 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.05);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      opacity: 1;
+    }
+
+    .alert.fade-out {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    /* ===== varian warna sesuai tipe ===== */
+    .alert-success {
+      --alert-color: #2e7d32;
+      border-left-color: #a5d6a7 !important;
+    }
+
+    .alert-danger, .alert-error {
+      --alert-color: #c62828;
+      border-left-color: #ef9a9a !important;
+    }
+
+    .alert-warning {
+      --alert-color: #f57c00;
+      border-left-color: #ffcc80 !important;
+    }
+
+    .alert-info {
+      --alert-color: #1565c0;
+      border-left-color: #90caf9 !important;
+    }
+
+    /* Tombol close biar halus & bersih */
+    .alert .close {
+      color: #666;
+      font-size: 18px;
+      line-height: 1;
+      background: none;
+      border: none;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+
+    .alert .close:hover {
+      opacity: 1;
+    }
+
+
+  </style>
+
+  <script>
+    // Auto-close alerts after 4 seconds (fade out halus)
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.alert').forEach(alert => {
+        setTimeout(() => {
+          alert.classList.add('fade-out');
+          setTimeout(() => alert.remove(), 600); // hapus setelah animasi
+        }, 4000);
+      });
+    });
+  </script>
+{% endif %}

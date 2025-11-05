@@ -1,0 +1,51 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Create Supplier</h3>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title mb-4">Form Tambah Supplier</h4>
+
+    <form method="post" class="forms-sample">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="nama_supplier">Nama Supplier</label>
+        <input type="text"
+               class="form-control"
+               id="nama_supplier"
+               name="nama_supplier"
+               placeholder="Masukkan nama supplier"
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="nomor_telepon_supplier">Nomor Telepon Supplier</label>
+        <input type="number"
+               class="form-control"
+               id="nomor_telepon_supplier"
+               name="nomor_telepon_supplier"
+               placeholder="Masukkan nomor telepon">
+      </div>
+
+      <div class="form-group">
+        <label for="alamat_supplier">Alamat Supplier</label>
+        <textarea class="form-control"
+                  id="alamat_supplier"
+                  name="alamat_supplier"
+                  rows="3"
+                  placeholder="Masukkan alamat lengkap supplier"></textarea>
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <a href="{% url 'read_supplier' %}" class="btn btn-light mr-2">Batal</a>
+        <button type="submit" class="btn btn-success text-white"><i class="ti-check mr-1"></i>Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

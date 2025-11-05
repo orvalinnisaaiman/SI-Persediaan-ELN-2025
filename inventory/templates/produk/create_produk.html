@@ -1,0 +1,77 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load l10n %}
+
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Create Produk</h3>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title mb-4">Form Tambah Produk</h4>
+
+    <form method="post" class="forms-sample">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="nama_produk">Nama Produk</label>
+        <input type="text"
+               class="form-control"
+               id="nama_produk"
+               name="nama_produk"
+               placeholder="Masukkan tipe produk (contoh: 211 x 107, EOE 211, Clubcan, dsb)"
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="jenis_produk">Jenis Produk</label>
+        <select class="form-control" id="jenis_produk" name="jenis_produk" required>
+            <option value="">-- Pilih Jenis Produk --</option>
+            <option value="Can 307">Can 307</option>
+            <option value="Can 211">Can 211</option>
+            <option value="Can 311">Can 311</option>
+            <option value="Can 202">Can 202</option>
+            <option value="Clubcan">Clubcan</option>
+            <option value="EOE 307">EOE 307</option>
+            <option value="EOE 211">EOE 211</option>
+            <option value="EOE 200">EOE 200</option>
+            <option value="EOE 209">EOE 209</option>
+            <option value="Bottom End 202">Bottom End 202</option>
+            <option value="EOE Clubcan">EOE Clubcan</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="nama_produk">Kapasitas Pallet (pcs)</label>
+        {% localize off %}
+        <input class="form-control" 
+              id = "kapasitas_pallet"
+              type="number" 
+              name="kapasitas_pallet" 
+              placeholder = "Masukkan kapasitas produk yang dapat dimuat 1 pallet"
+              min="1" required>
+        {% endlocalize %}
+      </div>
+
+      <div class="form-group">
+        <label for="nama_produk">Safety Stock (pcs)</label>
+        {% localize off %}
+        <input class="form-control" 
+              id = "safety_stock"
+              type="number" 
+              name="safety_stock" 
+              placeholder = "Masukkan safety stock produk"
+              min="1" required>
+        {% endlocalize %}
+      </div>
+
+
+      <div class="d-flex justify-content-end">
+        <a href="{% url 'read_produk' %}" class="btn btn-light mr-2">Batal</a>
+        <button type="submit" class="btn btn-success text-white"><i class="ti-check mr-1"></i>Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

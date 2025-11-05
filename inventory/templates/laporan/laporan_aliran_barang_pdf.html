@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Laporan Aliran Barang</title>
+    <style>
+    /* === A4 LANDSCAPE COMPACT === */
+    @page { size: A4 landscape; margin: 10mm 10mm; }
+    body { font-family: sans-serif; font-size: 10px; }
+    h1 { font-size: 16px; margin: 0 0 6mm 0; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { border: 1px solid #444; padding: 2px 3px; vertical-align: top; }
+    th { background: #f2f2f2; }
+    td, th { white-space: normal; word-break: break-word; overflow-wrap: anywhere; hyphens: auto; }
+
+    thead { display: table-header-group; }
+    tfoot { display: table-footer-group; }
+    tr { page-break-inside: avoid; }
+
+    /* ==== Lebar kolom (total fixed ~230mm, sisa ke Keterangan; aman utk A4 landscape ≈ 277mm) ==== */
+    .w-no   { width: 12mm; }   /* No */
+    .w-tgl  { width: 24mm; }   /* Tanggal */
+    .w-nama { width: 70mm; }   /* Nama barang/produk */
+    .w-jn   { width: 34mm; }   /* Jenis */
+    .w-sat  { width: 18mm; }   /* Satuan */
+    .w-in   { width: 24mm; }   /* Masuk */
+    .w-out  { width: 24mm; }   /* Keluar */
+    .w-bal  { width: 24mm; }   /* Sisa */
+    .w-ket  { width: auto; }   /* Keterangan (mengambil sisa lebar) */
+
+    .num { text-align: right; }
+    .center { text-align: center; }
+    /* Keterangan dibuat sedikit lebih kecil agar muat */
+    td.w-ket { font-size: 9px; line-height: 1.25; }
+    </style>
+
+</head>
+<body>
+  <h1>Laporan Aliran Barang</h1>
+  <div style="margin-bottom:6mm;">
+    Periode: {{ start_date }} s.d. {{ end_date }}
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:30px;">No</th>
+        <th style="width:80px;">Tanggal</th>
+        <th>Nama</th>
+        <th style="width:140px;">Jenis</th>
+        <th style="width:60px;">Satuan</th>
+        <th style="width:70px;">Masuk</th>
+        <th style="width:70px;">Keluar</th>
+        <th style="width:80px;">Sisa</th>
+        <th style="width:200px;">Keterangan</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if groups and groups|length > 0 %}
+        {% for g in groups %}
+          {% with g.rows|length as rlen %}
+            {% for row in g.rows %}
+            <tr>
+              {% if forloop.first %}
+                <td class="center" rowspan="{{ rlen }}">{{ forloop.parentloop.counter }}</td>
+                <td class="center" rowspan="{{ rlen }}">{{ g.tanggal }}</td>
+              {% endif %}
+              <td>{{ row.nama }}</td>
+              <td>{{ row.jenis }}</td>
+              <td class="center">{{ row.satuan }}</td>
+              <td class="num">{{ row.masuk }}</td>
+              <td class="num">{{ row.keluar }}</td>
+              <td class="num"><strong>{{ row.sisa }}</strong></td>
+              <td>{{ row.ket }}</td>
+            </tr>
+            {% endfor %}
+          {% endwith %}
+        {% endfor %}
+
+          <tr><td colspan="9">Tidak ada data.</td></tr>
+      {% else %}
+        <tr><td colspan="9">Tidak ada data.</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</body>
+</html>

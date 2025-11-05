@@ -1,0 +1,141 @@
+{% extends "base/base.html" %}
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Laporan Rekapitulasi Stok</h3>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="get" class="form-inline">
+      <div class="form-group mr-2 mb-2">
+        <label for="start" class="mr-2">Dari</label>
+        <input type="date" id="start" name="start" class="form-control"
+               value="{{ start_date|date:'Y-m-d' }}">
+      </div>
+      <div class="form-group mr-2 mb-2">
+        <label for="end" class="mr-2">Sampai</label>
+        <input type="date" id="end" name="end" class="form-control"
+               value="{{ end_date|date:'Y-m-d' }}">
+      </div>
+      <button class="btn btn-primary text-white ml-2 mb-2"><i class="ti-search mr-1"></i>Filter</button>
+
+      {% if start_date and end_date %}
+        <a href="{{ pdf_url }}" class="btn btn-success ml-2 mb-2"><i class="ti-export mr-1"></i>Export PDF</a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+{% if start_date and end_date %}
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title">Produk</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead class="thead-light">
+          <tr>
+            <th style="width:60px;">No</th>
+            <th>Nama Produk</th>
+            <th class="text-right">Stok Awal</th>
+            <th class="text-right">Masuk</th>
+            <th class="text-right">Keluar</th>
+            <th class="text-right">Penyesuaian</th>
+            <th class="text-right">Stok Akhir</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% with tot_awal=0 tot_masuk=0 tot_keluar=0 tot_adj=0 tot_akhir=0 %}
+          {% for row in produk_data %}
+          <tr>
+            <td>{{ row.no }}</td>
+            <td>{{ row.nama }}</td>
+            <td class="text-right">{{ row.stok_awal }}</td>
+            <td class="text-right">{{ row.masuk }}</td>
+            <td class="text-right">{{ row.keluar }}</td>
+            <td class="text-right">{{ row.penyesuaian }}</td>
+            <td class="text-right font-weight-bold">{{ row.stok_akhir }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" class="text-center">Tidak ada data produk di periode ini.</td></tr>
+          {% endfor %}
+          {% endwith %}
+        </tbody>
+      </table>
+    </div>
+
+    <hr>
+
+    
+    <h4 class="card-title mt-4">Bahan Baku</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th class="text-center" style="width:40px;">No</th>
+            <th>Nama Bahan</th>
+            <th class="text-center" style="width:100px;">Stok Awal</th>
+            <th class="text-center" style="width:100px;">Masuk</th>
+            <th class="text-center" style="width:100px;">Keluar</th>
+            <th class="text-center" style="width:110px;">Penyesuaian</th>
+            <th class="text-center" style="width:110px;">Stok Akhir</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in bahan_baku_data %}
+          <tr>
+            <td class="text-center">{{ row.no }}</td>
+            <td>{{ row.nama }}</td>
+            <td class="text-right">{{ row.stok_awal }}</td>
+            <td class="text-right">{{ row.masuk }}</td>
+            <td class="text-right">{{ row.keluar }}</td>
+            <td class="text-right">{{ row.penyesuaian }}</td>
+            <td class="text-right font-weight-bold">{{ row.stok_akhir }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" class="text-center">Tidak ada data bahan baku di periode ini.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <hr>
+
+    <h4 class="card-title mt-4">Bahan Pembantu</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead class="thead-light">
+          <tr>
+            <th style="width:60px;">No</th>
+            <th>Nama Bahan</th>
+            <th class="text-right">Stok Awal</th>
+            <th class="text-right">Masuk</th>
+            <th class="text-right">Keluar</th>
+            <th class="text-right">Penyesuaian</th>
+            <th class="text-right">Stok Akhir</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in bahan_data %}
+          <tr>
+            <td>{{ row.no }}</td>
+            <td>{{ row.nama }}</td>
+            <td class="text-right">{{ row.stok_awal }}</td>
+            <td class="text-right">{{ row.masuk }}</td>
+            <td class="text-right">{{ row.keluar }}</td>
+            <td class="text-right">{{ row.penyesuaian }}</td>
+            <td class="text-right font-weight-bold">{{ row.stok_akhir }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" class="text-center">Tidak ada data bahan pembantu di periode ini.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% else %}
+  <div class="alert alert-info">
+    Silakan pilih periode untuk menampilkan data.
+  </div>
+{% endif %}
+{% endblock %}

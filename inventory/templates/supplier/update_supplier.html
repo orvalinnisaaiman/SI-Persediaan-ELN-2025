@@ -1,0 +1,58 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Update Supplier</h3>
+  {% comment %} <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'read_supplier' %}">Data Supplier</a></li>
+      <li class="breadcrumb-item active text-muted" aria-current="page">Update Supplier</li>
+    </ol>
+  </nav> {% endcomment %}
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title mb-4">Form Update Supplier</h4>
+
+    <form method="post" class="forms-sample">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="nama_supplier">Nama Supplier</label>
+        <input type="text" 
+               class="form-control" 
+               id="nama_supplier" 
+               name="nama_supplier" 
+               value="{{ getsupplierobj.nama_supplier }}" 
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="nomor_telepon_supplier">Nomor Telepon Supplier</label>
+        <input type="text" 
+               class="form-control" 
+               id="nomor_telepon_supplier" 
+               name="nomor_telepon_supplier" 
+               value="{{ getsupplierobj.nomor_telepon_supplier }}" 
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="alamat_supplier">Alamat Supplier</label>
+        <textarea class="form-control" 
+                  id="alamat_supplier" 
+                  name="alamat_supplier" 
+                  rows="3" 
+                  required>{{ getsupplierobj.alamat_supplier }}</textarea>
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <a href="{% url 'read_supplier' %}" class="btn btn-light mr-2">Batal</a>
+        <button type="submit" class="btn btn-success text-white"><i class="ti-check mr-1"></i>Simpan Perubahan</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

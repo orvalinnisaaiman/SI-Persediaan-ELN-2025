@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Sistem Persediaan ELN</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="{% static 'vendors/feather/feather.css' %}">
+  <link rel="stylesheet" href="{% static 'vendors/ti-icons/css/themify-icons.css' %}">
+  <link rel="stylesheet" href="{% static 'vendors/css/vendor.bundle.base.css' %}">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="{% static 'vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}">
+  <link rel="stylesheet" href="{% static 'vendors/ti-icons/css/themify-icons.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'js/select.dataTables.min.css' %}">
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="{% static 'css/vertical-layout-light/style.css' %}">
+  
+  <!-- endinject -->
+  <link rel="shortcut icon" href="{% static 'images/logo_eln.WEBP' %}" />
+  <!-- sweet alert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".btn-delete").forEach(btn => {
+      btn.addEventListener("click", e => {
+        e.preventDefault();
+        const href = btn.getAttribute("href");
+        const nama = btn.dataset.nama;
+        Swal.fire({
+          title: `Yakin ingin menghapus data ${nama}?`,
+          text: "Data yang dihapus tidak bisa dikembalikan!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Ya, hapus!",
+          cancelButtonText: "Batal",
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#8f8f8f"
+        }).then(result => {
+          if (result.isConfirmed) window.location.href = href;
+        });
+      });
+    });
+  });
+  </script>
+
+</head>
+<body>
+  <div class = "container-scroller">
+    {% include 'base/navbar.html' %}
+    <div class = "container-fluid page-body-wrapper">
+      {% include 'base/sidebar.html' %}
+      <div class = "main-panel">
+        <div class = "content-wrapper">
+          {% include 'base/messages.html' %}
+          {% block content %} {% endblock %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% block scripts %}{% endblock scripts %}
+ 
+  <!-- container-scroller -->
+
+  <!-- plugins:js -->
+  <script src="{% static 'vendors/js/vendor.bundle.base.js' %}"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="{% static 'vendors/chart.js/Chart.min.js' %}"></script>
+  <script src="{% static 'vendors/datatables.net/jquery.dataTables.js' %}"></script>
+  <script src="{% static 'vendors/datatables.net-bs4/dataTables.bootstrap4.js' %}"></script>
+  <script src="{% static 'js/dataTables.select.min.js' %}"></script>
+
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="{% static 'js/off-canvas.js' %}"></script>
+  <script src="{% static 'js/hoverable-collapse.js' %}"></script>
+  <script src="{% static 'js/template.js' %}"></script>
+  <script src="{% static 'js/settings.js' %}"></script>
+  <script src="{% static 'js/todolist.js' %}"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page-->
+  <script src="{% static 'js/dashboard.js' %}"></script>
+  <script src="{% static 'js/Chart.roundedBarCharts.js' %}"></script>
+  
+  <!-- inject css-->
+  <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+  <!-- End custom js for this page-->
+
+
+  <script>
+    (function(){
+    if (window.__bindGlobalDeleteSwal) return; 
+    window.__bindGlobalDeleteSwal = true;
+
+    function getCookie(name){
+      const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return m ? m.pop() : '';
+    }
+
+    document.addEventListener('click', function(e){
+      const btn = e.target.closest('.btn-delete, .btn-confirm-delete');
+      if (!btn) return;
+
+      e.preventDefault();
+
+      // dukung tiga sumber URL: data-url, data-action, href
+      const url  = btn.dataset.url || btn.dataset.action || btn.getAttribute('href');
+      const nama = btn.dataset.nama || 'data ini';
+
+      if (!url) { console.warn('Delete: URL kosong'); return; }
+
+      Swal.fire({
+        title: `Yakin ingin menghapus ${nama}?`,
+        text: "Data yang dihapus tidak bisa dikembalikan!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ya, hapus!",
+        cancelButtonText: "Batal",
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#8f8f8f"
+      }).then(result => {
+        if (!result.isConfirmed) return;
+
+        // kirim POST dengan CSRF
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = url;
+
+        const csrf = document.createElement('input');
+        csrf.type  = 'hidden';
+        csrf.name  = 'csrfmiddlewaretoken';
+        csrf.value = getCookie('csrftoken');
+        form.appendChild(csrf);
+
+        document.body.appendChild(form);
+        form.submit();
+      });
+    }, true);
+  })();
+  </script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,133 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="page-header">
+  <h3 class="page-title">Laporan Pengiriman</h3>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <form method="get" class="form-inline">
+      <div class="form-group mr-2 mb-2">
+        <label class="mr-2">Dari</label>
+        <input type="date" class="form-control" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+      </div>
+      <div class="form-group mr-2 mb-2">
+        <label class="mr-2">Sampai</label>
+        <input type="date" class="form-control" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+      </div>
+      <button class="btn btn-primary text-white ml-2 mb-2"><i class="ti-search mr-1"></i>Filter</button>
+      {% if pdf_url %}
+      <a href="{{ pdf_url }}" class="btn btn-success ml-2 mb-2">
+        <i class="ti-export mr-1"></i> Export PDF
+      </a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+{% if start_date and end_date %}
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title mb-3">Detail Pengiriman</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead class="thead-light">
+          <tr>
+            <th style="width:110px;" class="text-center">Tanggal</th>
+            <th class="text-center">No Surat Jalan</th>
+            <th>Customer</th>
+            <th>Produk</th>
+            <th style="width:110px;" class="text-center">Jenis</th>
+            <th style="width:110px;" class="text-center">Satuan</th>
+            <th style="width:120px;" class="text-center">Kuantitas</th>
+         
+          </tr>
+        </thead>
+        <tbody>
+          {% if rows %}
+            {% for r in rows %}
+            <tr>
+              <td class="text-center">{{ r.tanggal }}</td>
+              <td class="text-center">{{ r.nomor_sj }}</td>
+              <td>{{ r.customer }}</td>
+              <td>{{ r.produk }}</td>
+              <td class="text-center">{{ r.jenis }}</td>
+              <td class="text-center">{{ r.satuan }}</td>
+              <td class="text-center font-weight-bold">{{ r.qty }}</td>
+  
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="9" class="text-center">Tidak ada data untuk periode ini.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <h4 class="card-title mb-3">Ringkasan Pengiriman per Jenis CAN</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead class="thead-light">
+          <tr>
+            <th>Jenis</th>
+            <th class="text-right">Total Qty (pcs)</th>
+            <th class="text-right">Target Bulanan</th>
+            <th class="text-right">% Pencapaian</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CAN 307</td>
+            <td class="text-right">{{ mini.qty_307|default:0 }}</td>
+            <td class="text-right">—</td>
+            <td class="text-right">—</td>
+          </tr>
+          <tr>
+            <td>CAN 211</td>
+            <td class="text-right">{{ mini.qty_211|default:0 }}</td>
+            <td class="text-right">—</td>
+            <td class="text-right">—</td>
+          </tr>
+          <tr class="font">
+            <td>CAN 307 + CAN 211</td>
+            <td class="text-right">{{ mini.qty_307_211|default:0 }}</td>
+            <td class="text-right">{{ mini.target_307_211|default:0 }}</td>
+            <td class="text-right">{{ mini.pct_307_211|floatformat:2 }}%</td>
+          </tr>
+          <tr>
+            <td>CAN 311</td>
+            <td class="text-right">{{ mini.qty_311|default:0 }}</td>
+            <td class="text-right">{{ mini.target_311|default:0 }}</td>
+            <td class="text-right">{{ mini.pct_311|floatformat:2 }}%</td>
+          </tr>
+          <tr>
+            <td>CAN 202</td>
+            <td class="text-right">{{ mini.qty_202|default:0 }}</td>
+            <td class="text-right">{{ mini.target_202|default:0 }}</td>
+            <td class="text-right">{{ mini.pct_202|floatformat:2 }}%</td>
+          </tr>
+          <tr class="font-weight-bold">
+            <td>TOTAL </td>
+            <td class="text-right">{{ mini.qty_total_4|default:0 }}</td>
+            <td class="text-right">—</td>
+            <td class="text-right">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% else %}
+  <div class="alert alert-info">
+    Silakan pilih periode untuk menampilkan data.
+  </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,207 @@
+{% extends "base/base.html" %}
+{% load static%}
+{% load l10n %}
+
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Create Data Pengiriman</h3>
+</div>
+
+<div class="row">
+  <div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <form class="form-sample" method="post">
+          {% csrf_token %}
+
+          <h4 class="card-title mb-4">Pengiriman</h4>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label">Tanggal Pengiriman</label>
+            <div class="col-sm-9">
+              <input class="form-control" type="date" name="tanggal_pengiriman" required>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label">Nama Customer</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="nama_customer" required>
+                <option value="" selected disabled>Pilih customer…</option>
+                {% for i in customerobj %}
+                  <option value="{{ i.id_customer }}">{{ i.nama_customer }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label">Nomor Surat Jalan</label>
+            <div class="col-sm-9">
+              <input class="form-control" type="text" name="nomor_sj" min="1" required>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <h4 class="card-title mb-3">Detail Pengiriman</h4>
+
+          <!-- Container detail (HARUS di dalam <form>) -->
+          <div id="detail_pengiriman">
+            <!-- Detail 1 (default) -->
+            <div class="detail-group border rounded p-3 mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0 font-weight-bold">Detail Pengiriman <span class="urut">1</span></h6>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleterow(this)">
+                  <i class="ti-trash"></i> Hapus
+                </button>
+              </div>
+
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Nama Produk</label>
+                <div class="col-sm-9">
+                  <select class="form-control produk" name="nama_produk[]" required>
+                    <option value="" selected disabled>Pilih produk…</option>
+                    {% for i in produkobj %}
+                      <option value="{{ i.id_produk }}">{{ i }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Jumlah Produk Dikirim</label>
+                <div class="col-sm-9">
+                  {% localize off %}
+                  <!-- Input tampilan TANPA name, pakai data-target ke hidden unik -->
+                  <input type="text"
+                        class="form-control js-thousand"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        data-target="#qty_raw_1">
+                  {% endlocalize %}
+                  <!-- Hidden bernama: yang dikirim ke server -->
+                  <input type="hidden" name="jumlah_produk_dikirim[]" id="qty_raw_1">
+                </div>
+              </div>
+            </div>
+            <!-- /Detail 1 -->
+          </div>
+
+          <!-- Tombol aksi (tetap DI DALAM form, setelah container detail) -->
+          <div class="d-flex justify-content-between mt-4">
+            <button type="button" class="btn btn-primary btn-icon-text" onclick="tambahDetail()">
+              <i class="ti-plus mr-1"></i> Tambah Detail
+            </button>
+
+            <div>
+              <a href="{% url 'read_pengiriman' %}" class="btn btn-light mr-2">Batal</a>
+              <button type="submit" class="btn btn-success btn-icon-text">
+                <i class="ti-check mr-1"></i> Simpan
+              </button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script -->
+<script>
+  // counter global untuk ID unik, sudah terpakai '1' di baris default
+  window.__rowSeq = 1;
+
+  function tambahDetail() {
+    const container = document.getElementById('detail_pengiriman');
+    window.__rowSeq += 1;
+
+    const noUrut = container.querySelectorAll('.detail-group').length + 1;
+    const hid = `qty_raw_${window.__rowSeq}`;
+
+    const baris = document.createElement('div');
+    baris.className = 'detail-group border rounded p-3 mb-3';
+    baris.innerHTML = `
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0 font-weight-bold">Detail Pengiriman <span class="urut">${noUrut}</span></h6>
+        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleterow(this)">
+          <i class="ti-trash"></i> Hapus
+        </button>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Nama Produk</label>
+        <div class="col-sm-9">
+          <select class="form-control produk" name="nama_produk[]" required>
+            <option value="" selected disabled>Pilih produk…</option>
+            {% for i in produkobj %}
+              <option value="{{ i.id_produk }}">{{ i }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Jumlah Produk Dikirim</label>
+        <div class="col-sm-9">
+          {% localize off %}
+          <input class="form-control js-thousand"
+                 type="text"
+                 inputmode="numeric"
+                 autocomplete="off"
+                 data-target="#${hid}">
+          {% endlocalize %}
+          <input type="hidden" name="jumlah_produk_dikirim[]" id="${hid}">
+        </div>
+      </div>
+    `;
+    container.appendChild(baris);
+    updateDetailNumbers();
+  }
+
+  function deleterow(button) {
+    const container = document.getElementById('detail_pengiriman');
+    const groups = container.querySelectorAll('.detail-group');
+    if (groups.length > 1) {
+      button.closest('.detail-group').remove();
+      updateDetailNumbers();
+    } else {
+      alert('Minimal harus ada satu detail pengiriman.');
+    }
+  }
+
+  function updateDetailNumbers() {
+    const details = document.querySelectorAll('#detail_pengiriman .detail-group .urut');
+    details.forEach((el, idx) => { el.textContent = (idx + 1); });
+  }
+
+  // Formatter ribuan -> set ke hidden target masing-masing
+  (function(){
+    const fmt = n => n.replace(/\D/g,'').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    document.addEventListener('input', e => {
+      const el = e.target.closest('.js-thousand');
+      if (!el) return;
+      el.value = fmt(el.value);
+      const target = document.querySelector(el.dataset.target);
+      if (target) target.value = el.value.replace(/\D/g,'') || '';
+    });
+
+    document.addEventListener('blur', e => {
+      const el = e.target.closest('.js-thousand');
+      if (!el) return;
+      el.value = fmt(el.value);
+    }, true);
+
+    document.addEventListener('submit', e => {
+      e.target.querySelectorAll('.js-thousand').forEach(el => {
+        const target = document.querySelector(el.dataset.target);
+        if (target) target.value = el.value.replace(/\D/g,'') || '0';
+      });
+    }, true);
+  })();
+</script>
+
+
+{% endblock %}

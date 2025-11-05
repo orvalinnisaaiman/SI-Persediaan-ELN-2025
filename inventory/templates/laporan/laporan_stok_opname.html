@@ -1,0 +1,161 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="page-header">
+  <h3 class="page-title">Laporan Stok Opname</h3>
+</div>
+
+<!-- FILTER CARD -->
+<div class="card mb-3">
+  <div class="card-body">
+    <form method="get" class="form-inline">
+      <div class="form-group mr-2 mb-2">
+        <label class="mr-2">Dari</label>
+        <input type="date" class="form-control" name="start_date"
+               value="{{ start_date|date:'Y-m-d' }}">
+      </div>
+      <div class="form-group mr-2 mb-2">
+        <label class="mr-2">Sampai</label>
+        <input type="date" class="form-control" name="end_date"
+               value="{{ end_date|date:'Y-m-d' }}">
+      </div>
+      <button class="btn btn-primary text-white ml-2 mb-2">
+        <i class="ti-search mr-1"></i>Filter
+      </button>
+      {% if pdf_url %}
+      <a href="{{ pdf_url }}" class="btn btn-success ml-2 mb-2">
+        <i class="ti-export mr-1"></i> Export PDF
+      </a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+{% if groups %}
+  {% for g in groups %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <h4 class="card-title mb-3">Tanggal: {{ g.tanggal|date:"d M Y" }}</h4>
+
+      <!-- PRODUK -->
+      <h5 class="mt-3">Produk</h5>
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+          <thead class="thead-light">
+            <tr class="text-center">
+              <th>No</th>
+              <th>Nama</th>
+              <th>Stok Awal</th>
+              <th>Masuk</th>
+              <th>Keluar</th>
+              <th>Stok Akhir (Sistem)</th>
+              <th>Stok Fisik</th>
+              <th>Selisih</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if g.produk_rows %}
+              {% for r in g.produk_rows %}
+              <tr class="text-right">
+                <td class="text-center">{{ forloop.counter }}</td>
+                <td class="text-left">{{ r.nama }}</td>
+                <td>{{ r.stok_awal }}</td>
+                <td>{{ r.masuk }}</td>
+                <td>{{ r.keluar }}</td>
+                <td>{{ r.stok_akhir }}</td>
+                <td>{{ r.stok_fisik }}</td>
+                <td class="{% if r.selisih != 0 %}text-danger font-weight-bold{% endif %}">{{ r.selisih }}</td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr><td colspan="8" class="text-center text-muted">Tidak ada data</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- BAHAN BAKU -->
+      <h5 class="mt-4">Bahan Baku</h5>
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+          <thead class="thead-light">
+            <tr class="text-center">
+              <th>No</th>
+              <th>Nama</th>
+              <th>Stok Awal</th>
+              <th>Masuk</th>
+              <th>Keluar</th>
+              <th>Stok Akhir (Sistem)</th>
+              <th>Stok Fisik</th>
+              <th>Selisih</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if g.baku_rows %}
+              {% for r in g.baku_rows %}
+              <tr class="text-right">
+                <td class="text-center">{{ forloop.counter }}</td>
+                <td class="text-left">{{ r.nama }}</td>
+                <td>{{ r.stok_awal }}</td>
+                <td>{{ r.masuk }}</td>
+                <td>{{ r.keluar }}</td>
+                <td>{{ r.stok_akhir }}</td>
+                <td>{{ r.stok_fisik }}</td>
+                <td class="{% if r.selisih != 0 %}text-danger font-weight-bold{% endif %}">{{ r.selisih }}</td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr><td colspan="8" class="text-center text-muted">Tidak ada data</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- BAHAN PEMBANTU -->
+      <h5 class="mt-4">Bahan Pembantu</h5>
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+          <thead class="thead-light">
+            <tr class="text-center">
+              <th>No</th>
+              <th>Nama</th>
+              <th>Stok Awal</th>
+              <th>Masuk</th>
+              <th>Keluar</th>
+              <th>Stok Akhir (Sistem)</th>
+              <th>Stok Fisik</th>
+              <th>Selisih</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if g.pembantu_rows %}
+              {% for r in g.pembantu_rows %}
+              <tr class="text-right">
+                <td class="text-center">{{ forloop.counter }}</td>
+                <td class="text-left">{{ r.nama }}</td>
+                <td>{{ r.stok_awal }}</td>
+                <td>{{ r.masuk }}</td>
+                <td>{{ r.keluar }}</td>
+                <td>{{ r.stok_akhir }}</td>
+                <td>{{ r.stok_fisik }}</td>
+                <td class="{% if r.selisih != 0 %}text-danger font-weight-bold{% endif %}">{{ r.selisih }}</td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr><td colspan="8" class="text-center text-muted">Tidak ada data</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="alert alert-info">
+    Silakan pilih periode untuk menampilkan data stok opname.
+  </div>
+{% endif %}
+
+{% endblock %}

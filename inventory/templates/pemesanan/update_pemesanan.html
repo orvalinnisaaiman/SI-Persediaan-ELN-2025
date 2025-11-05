@@ -1,0 +1,54 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Edit Pemesanan</h3>
+</div>
+
+<div class="row">
+  <div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <form method="post" class="form-sample">
+          {% csrf_token %}
+
+          <h4 class="card-title mb-4">Data Pemesanan</h4>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label">Tanggal Pemesanan</label>
+            <div class="col-sm-9">
+              <input class="form-control" type="date" name="tanggal_pemesanan"
+                     value="{{ detail.tanggal_pemesanan|date:'Y-m-d' }}" required>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label">Supplier</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="supplier" required>
+                {% for s in supplierobj %}
+                  <option value="{{ s.id_supplier }}"
+                          {% if s.id_supplier == p.id_supplier.id_supplier %}selected{% endif %}>
+                    {{ s.nama_supplier }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="alert alert-info mt-3">
+            Perubahan ini akan berlaku untuk seluruh detail bahan & produk di dokumen ini.
+          </div>
+
+          <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'read_pemesanan' %}" class="btn btn-light mr-2">Batal</a>
+            <button type="submit" class="btn btn-success">
+              <i class="ti-check mr-1"></i> Simpan Perubahan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

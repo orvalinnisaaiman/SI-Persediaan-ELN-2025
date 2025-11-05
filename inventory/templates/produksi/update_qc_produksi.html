@@ -1,0 +1,103 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load l10n %}
+
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Update QC — Reject & Finished Goods</h3>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title mb-4">
+      Produksi #{{ getdetailobj.id_produksi.id_produksi }}
+      <small class="text">/ Detail #{{ getdetailobj.id_detail_produksi }}</small>
+    </h4>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-3" role="alert">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" class="mt-2 form-sample">
+      {% csrf_token %}
+
+      <!-- INFO UTAMA (read-only) -->
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label class="font-weight-bold">Tanggal Produksi</label>
+          <input type="text" class="form-control" value="{{ getdetailobj.id_produksi.tanggal_produksi }}" readonly>
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label class="font-weight-bold">Nama Produk</label>
+          <input type="text" class="form-control" value="{{ getdetailobj.id_produk }}" readonly>
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label class="font-weight-bold">Nama Bahan Baku</label>
+          <input type="text" class="form-control" value="{{ getdetailobj.id_bahan }}" readonly>
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label class="font-weight-bold">Kuantitas Produk Dihasilkan</label>
+          <input type="text" class="form-control js-thousand" inputmode="numeric"  value="{{ getdetailobj.jumlah_produk|unlocalize }}" readonly>
+        </div>
+
+        <div class="col-md-4 mb-3">
+          <label class="font-weight-bold">Kuantitas Bahan Baku Digunakan</label>
+          <input type="text" class="form-control js-thousand" inputmode="numeric"  value="{{ getdetailobj.jumlah_bahan_keluar|unlocalize }}" readonly>
+        </div>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- FIELD QC (editable) -->
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label class="font-weight-bold mb-1">Jumlah Reject</label>
+            <input type="text"
+                  inputmode="numeric"
+                  class="form-control js-thousand"
+                  name="jumlah_reject"
+                  min="0"
+                  step="1"
+                  value="{{ getdetailobj.jumlah_reject|default:0|unlocalize }}"
+                  required>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label class="font-weight-bold mb-1">Jumlah Finished Goods</label>
+            <input type="text"
+                  inputmode="numeric"
+                  class="form-control js-thousand"
+                  name="jumlah_fg"
+                  min="0"
+                  step="1"
+                  value="{{ getdetailobj.jumlah_fg|default:0|unlocalize }}"
+                  required>
+          </div>
+        </div>
+      </div>
+
+      <small class="text d-block mb-3">
+        Kolom selain Jumlah Reject dan Jumlah Finished Goods bersifat informasi saja dan tidak dapat diubah pada halaman ini.
+      </small>
+
+      <!-- TOMBOL AKSI -->
+      <div class="d-flex gap-2 mt-2">
+        <button type="submit" class="btn btn-success">
+          <i class="ti-check mr-1"></i> Simpan QC
+        </button>
+        <a href="{% url 'read_produksi' %}" class="btn btn-light">
+          <i class="ti-arrow-left mr-1"></i> Kembali
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

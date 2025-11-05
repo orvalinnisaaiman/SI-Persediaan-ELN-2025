@@ -1,0 +1,198 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load l10n %}
+
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Data Stok Opname Bahan</h3>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <!-- Filter -->
+    <form method="get" class="mb-3">
+      <div class="form-row">
+        <div class="col-md-3 mb-2">
+          <label class="mb-1">Tanggal Mulai</label>
+          <input type="date" class="form-control" name="tmin" value="{{ tmin|default_if_none:'' }}">
+        </div>
+        <div class="col-md-3 mb-2">
+          <label class="mb-1">Tanggal Akhir</label>
+          <input type="date" class="form-control" name="tmax" value="{{ tmax|default_if_none:'' }}">
+        </div>
+        <div class="col-md-4 mb-2">
+          <label class="mb-1">Bahan</label>
+          <select class="form-control" name="bahan">
+            <option value="">— Semua Bahan —</option>
+            {% for b in bahanobj %}
+              <option value="{{ b.id_bahan }}" {% if bahan_sel == b.id_bahan|stringformat:"s" %}selected{% endif %}>
+                {{ b.nama_bahan }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2 mb-2 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary btn-sm me-2"><i class="ti-search mr-1"></i>Filter</button>
+          <a href="{% url 'read_so_bahan' %}" class="btn btn-light btn-sm me2"><i class="ti-reload mr-1"></i>Reset</a>
+        </div>
+      </div>
+    </form>
+
+    <!-- Tabel -->
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th class="text-center" style="width:72px;">No</th>
+            <th class="text-center" style="width:150px;">Tanggal SO</th>
+            <th>Bahan</th>
+            <th class="text-center" style="width:160px;">Stok Fisik</th>
+            <th class="text-center" style="width:220px;">Penyesuaian</th>
+            {% if is_ppic %}<th class="text-center" style="width:180px;">Action</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in page_obj.object_list %}
+          <tr>
+            <td class="text-center">{{ page_obj.start_index|add:forloop.counter0 }}</td>
+            <td class="text-center">{{ d.id_stok_opname.tanggal_stok_opname }}</td>
+            <td>{{ d.id_bahan.nama_bahan }}</td>
+            <td class="text-center">{{ d.stok_fisik_bahan|unlocalize }}</td>
+            <td class="text-center">
+              {% with delta=d.penyesuaian|default_if_none:0 delta_abs=d.penyesuaian_abs|default_if_none:0 sistem=d.stok_sistem|default_if_none:0 %}
+                {% if delta == 0 %}
+                  <span class="badge badge-secondary">Sesuai (0)</span>
+                  <div class="small text-muted">Sistem: {{ sistem }}</div>
+                {% elif delta > 0 %}
+                  <span class="badge badge-success">Tambah {{ delta }}</span>
+                  <div class="small text-muted">Sistem: {{ sistem }}</div>
+                {% else %}
+                  <span class="badge badge-danger">Kurang {{ delta_abs }}</span>
+                  <div class="small text-muted">Sistem: {{ sistem }}</div>
+                {% endif %}
+              {% endwith %}
+            </td>
+
+            {% if is_ppic %}
+            <td class="text-center">
+              <a href="{% url 'update_detail_so_bahan' d.id_detail_so_bahan %}"
+                 class="btn btn-xs btn-outline-primary">
+                <i class="ti-pencil"></i> Edit
+              </a>
+              <button type="button"
+                      class="btn btn-xs btn-outline-danger btn-delete"
+                      data-url="{% url 'delete_detail_so_bahan' d.id_detail_so_bahan %}"
+                      data-nama="Detail #{{ d.id_detail_so_bahan}} ({{ d.id_bahan.nama_bahan }})">
+                <i class="ti-trash"></i> Hapus
+              </button>
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="{% if is_ppic %}6{% else %}5{% endif %}" class="text-center text-muted">
+              Tidak ada data untuk filter saat ini.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-2">
+      <ul class="pagination justify-content-end mb-0">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if tmin %}&tmin={{ tmin }}{% endif %}{% if tmax %}&tmax={{ tmax }}{% endif %}{% if bahan_sel %}&bahan={{ bahan_sel }}{% endif %}">
+            &laquo;
+          </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+        {% endif %}
+
+        <li class="page-item disabled">
+          <span class="page-link">
+            Hal {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+          </span>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if tmin %}&tmin={{ tmin }}{% endif %}{% if tmax %}&tmax={{ tmax }}{% endif %}{% if bahan_sel %}&bahan={{ bahan_sel }}{% endif %}">
+            &raquo;
+          </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+</div>
+
+<!-- MODAL DELETE -->
+<div class="modal fade" id="confirmDelete" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3">
+      <form id="deleteForm" method="post">
+        {% csrf_token %}
+        <h4 class="title mb-2"></h4>
+        <p class="text-muted mb-0">Data yang dihapus tidak bisa dikembalikan.</p>
+        <div class="mt-3 d-flex gap-2">
+          <button type="submit" class="btn btn-danger">Ya, hapus!</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  if (window.__bindDeleteOnceUniversal) return;
+  window.__bindDeleteOnceUniversal = true;
+
+  var modalEl = document.getElementById('confirmDelete');
+  var formEl  = document.getElementById('deleteForm');
+  var titleEl = modalEl.querySelector('.title');
+
+  function showModal(){
+    try {
+      if (window.bootstrap && bootstrap.Modal) {
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();   // BS5
+      } else if (window.jQuery) {
+        jQuery(modalEl).modal('show');                          // BS4
+      } else {
+        alert('Konfirmasi tidak bisa dibuka (library modal tidak ditemukan).');
+      }
+    } catch (e) {
+      if (window.jQuery) jQuery(modalEl).modal('show'); else alert('Konfirmasi gagal dibuka.');
+    }
+  }
+
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('.btn-delete');
+    if (!btn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    var url = btn.dataset.url;
+    if (!url || url === 'null' || /\/null\/?$/.test(url)) {
+      console.error('Delete URL invalid:', btn);
+      alert('Gagal membuka konfirmasi: ID tidak ditemukan.');
+      return;
+    }
+    formEl.action = url;  // <- set action POST ke endpoint delete
+    titleEl.textContent = 'Yakin ingin menghapus ' + (btn.dataset.nama || 'data ini') + '?';
+    showModal();
+  }, true);
+})();
+</script>
+
+{% endblock %}

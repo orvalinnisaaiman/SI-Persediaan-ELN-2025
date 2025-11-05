@@ -1,0 +1,67 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Update Bahan</h3>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h4 class="card-title mb-4">Form Ubah Bahan</h4>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-3" role="alert">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Expect: context berisi 'bahan' (instance models.bahan) dan 'stok' (int) -->
+    <form method="post" class="forms-sample">
+      {% csrf_token %}
+
+      <!-- ID Bahan (readonly/infotekstual) -->
+      {% comment %} <div class="form-group">
+        <label>ID Bahan</label>
+        <input type="text" class="form-control" value="{{ getbahanobj.id_bahan }}" readonly>
+      </div> {% endcomment %}
+
+      <div class="form-group">
+        <label for="nama_bahan">Nama Bahan</label>
+        <input type="text"
+               class="form-control"
+               id="nama_bahan"
+               name="nama_bahan"
+               value="{{ getbahanobj.nama_bahan }}"
+               placeholder="Masukkan nama bahan"
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="jenis_bahan">Jenis Bahan</label>
+        <select class="form-control" id="jenis_bahan" name="jenis_bahan" required>
+          <option value="" >-- Pilih Jenis Bahan --</option>
+          <option value="Bahan Baku" {% if getbahanobj.jenis_bahan == 'Bahan Baku' %}selected{% endif %}>Bahan Baku</option>
+          <option value="Bahan Pembantu" {% if getbahanobj.jenis_bahan == 'Bahan Pembantu' %}selected{% endif %}>Bahan Pembantu</option>
+        </select>
+      </div>
+
+      <!-- STOK: hasil perhitungan, TIDAK bisa diedit -->
+      <div class="form-group">
+        <label>Stok (pcs)</label>
+        <input type="text" class="form-control" value="{{ stok }}" readonly>
+        <small class="form-text ">
+          Stok dihitung otomatis dari total bahan masuk (pemesanan) dikurangi total bahan keluar (produksi). Tidak bisa diedit manual.
+        </small>
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <a href="{% url 'read_bahan' %}" class="btn btn-light mr-2">Batal</a>
+        <button type="submit" class="btn btn-success">
+          <i class="ti-check mr-1"></i> Simpan Perubahan
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

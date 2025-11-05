@@ -1,0 +1,130 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Detail Pemesanan Bahan</h3>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      {% comment %} <li class="breadcrumb-item"><a href="{% url 'read_pemesanan' %}">Data Pemesanan</a></li> {% endcomment %}
+      <li class="breadcrumb-item active" aria-current="page">Detail Bahan (Pemesanan #{{ p.id_pemesanan }})</li>
+    </ol>
+  </nav>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="mb-3">
+      {% comment %} <div><strong>No Dokumen:</strong> {{ p.id_pemesanan }}</div> {% endcomment %}
+      <div><strong>Tanggal:</strong> {{ p.tanggal_pemesanan }}</div>
+      <div><strong>Supplier:</strong> {{ p.id_supplier.nama_supplier }}</div>
+      <div class="mt-2">
+        <a href="{% url 'read_detail_pemesanan_produk' p.id_pemesanan %}" class="btn btn-sm btn-outline-secondary">
+          Lihat Detail Produk
+        </a>
+        <a href="{% url 'read_pemesanan' %}" class="btn btn-sm btn-light">← Kembali</a>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th class="text-center">No</th>
+            <th>Nama Bahan</th>
+            <th class="text-center">Kuantitas</th>
+            {% if is_ppic %}<th class="text-center">Action</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in details %}
+          <tr>
+            <td class="text-center">{{ forloop.counter }}</td>
+            <td>{{ d.id_bahan }}</td>
+            <td class="text-center">{{ d.jumlah_bahan_masuk }}</td>
+            {% if is_ppic %}
+            <td class="text-center">
+              <a href="{% url 'update_detail_pemesanan_bahan' d.id_detail_pemesanan %}" class="btn btn-xs btn-outline-primary">
+                <i class="ti-pencil"></i> Edit
+              </a>
+              <button type="button"
+                      class="btn btn-xs btn-outline-danger btn-delete"
+                      data-url="{% url 'delete_detail_pemesanan_bahan' d.id_detail_pemesanan%}"
+                      data-nama="Detail Bahan #{{ d.id_detail_pemesanan }} ({{ d.id_bahan }})">
+                <i class="ti-trash"></i> Hapus
+              </button>
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="{% if is_ppic %}4{% else %}3{% endif %}" class="text-center text-muted">Belum ada detail bahan.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal konfirmasi hapus -->
+<div class="modal fade" id="confirmDelete" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3">
+      <form id="deleteForm" method="post">
+        {% csrf_token %}
+        <h4 class="title mb-2"></h4>
+        <p class="text-muted mb-0">Data yang dihapus tidak bisa dikembalikan.</p>
+        <div class="mt-3 d-flex gap-2">
+          <button type="submit" class="btn btn-danger">Ya, hapus!</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  if (window.__bindDeleteOnceUniversal) return;
+  window.__bindDeleteOnceUniversal = true;
+
+  var modalEl = document.getElementById('confirmDelete');
+  var formEl  = document.getElementById('deleteForm');
+  var titleEl = modalEl.querySelector('.title');
+
+  function showModal(){
+    try {
+      if (window.bootstrap && bootstrap.Modal) {
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();   // BS5
+      } else if (window.jQuery) {
+        jQuery(modalEl).modal('show');                          // BS4
+      } else {
+        alert('Konfirmasi tidak bisa dibuka (library modal tidak ditemukan).');
+      }
+    } catch (e) {
+      if (window.jQuery) jQuery(modalEl).modal('show'); else alert('Konfirmasi gagal dibuka.');
+    }
+  }
+
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('.btn-delete');
+    if (!btn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    var url = btn.dataset.url;
+    if (!url || url === 'null' || /\/null\/?$/.test(url)) {
+      console.error('Delete URL invalid:', btn);
+      alert('Gagal membuka konfirmasi: ID tidak ditemukan.');
+      return;
+    }
+    formEl.action = url;  // <- set action POST ke endpoint delete
+    titleEl.textContent = 'Yakin ingin menghapus ' + (btn.dataset.nama || 'data ini') + '?';
+    showModal();
+  }, true);
+})();
+</script>
+
+{% endblock %}

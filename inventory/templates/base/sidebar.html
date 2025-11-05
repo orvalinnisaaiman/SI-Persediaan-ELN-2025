@@ -1,0 +1,230 @@
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+  <ul class="nav">
+
+    {% if is_ppic or is_finance or is_manajer %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'base' %}">
+        <i class="icon-grid menu-icon"></i>
+        <span class="menu-title">Dashboard</span>
+      </a>
+    </li>
+    {% endif %}
+
+    {% if is_ppic or is_finance %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'read_supplier' %}">
+        <i class="ti-shopping-cart menu-icon"></i>   
+        <span class="menu-title">Supplier</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'read_customer' %}">
+        <i class="ti-user menu-icon"></i>   
+        <span class="menu-title">Customer</span>
+      </a>
+    </li>
+    {% endif %}
+
+    {% if is_ppic or is_finance or is_produksi %}
+    <li class="nav-item">
+      <a class="nav-link"
+        data-toggle="collapse"      
+        href="#menu-bahan"
+        aria-expanded="{% if urln == 'read_bahan' or urln == 'read_kebutuhan_pallet' %}true{% else %}false{% endif %}"
+        aria-controls="menu-bahan">
+        <i class="ti-receipt menu-icon"></i>
+        <span class="menu-title">Bahan</span>
+        <i class="menu-arrow"></i>
+      </a>
+
+      <div class="collapse submenu-compact {% if urln == 'read_bahan' or urln == 'read_kebutuhan_pallet'%}show{% endif %}"
+          id="menu-bahan">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'read_bahan' %}active{% endif %}"
+              href="{% url 'read_bahan' %}">
+              Data Bahan
+            </a>
+          </li>
+          {% if is_ppic %}
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'read_kebutuhan_pallet' %}active{% endif %}"
+              href="{% url 'read_kebutuhan_pallet' %}">
+              Kebutuhan Bahan Pallet
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </li>
+    {% with url_name=request.resolver_match.url_name %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'read_produk' %}">
+        <i class="ti-package menu-icon"></i>
+        <span class="menu-title">Produk</span>
+      </a>
+    </li>
+    {% endwith %}
+    {% endif %}
+
+    {% if is_ppic or is_finance %}
+    <li class="nav-item">
+      <a class="nav-link"
+        data-toggle="collapse"        
+        href="#menu-pemesanan"
+        aria-expanded="{% if urln == 'read_pemesanan' or urln == 'read_detail_pemesanan_bahan' or urln == 'read_detail_pemesanan_produk' %}true{% else %}false{% endif %}"
+        aria-controls="menu-pemesanan">
+        <i class="ti-receipt menu-icon"></i>
+        <span class="menu-title">Pemesanan</span>
+        <i class="menu-arrow"></i>
+      </a>
+
+      <div class="collapse submenu-compact {% if urln == 'read_pemesanan' or urln == 'read_detail_pemesanan_bahan' or urln == 'read_detail_pemesanan_produk'%}show{% endif %}"
+          id="menu-pemesanan">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'read_pemesanan' %}active{% endif %}"
+              href="{% url 'read_pemesanan' %}">
+              Data Pemesanan
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'read_detail_pemesanan_bahan' %}active{% endif %}"
+              href="{% url 'read_detail_bahan' %}">
+              Pemesanan Bahan
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'read_detail_pemesanan_produk' %}active{% endif %}"
+              href="{% url 'read_detail_produk' %}">
+              Pemesanan Produk
+            </a>
+          </li>
+        </ul>
+      </div>
+    </li>
+    {% endif %}
+
+    {% if is_ppic or is_produksi or is_qc %}
+    <li class="nav-item">
+      <a class="nav-link"
+        data-toggle="collapse"    
+        href="#menu-produksi"
+        aria-expanded="{% if urln == 'read_produksi' or urln == 'read_pallet' %}true{% else %}false{% endif %}"
+        aria-controls="menu-produksi">
+        <i class="ti-settings menu-icon"></i>
+        <span class="menu-title">Produksi</span>
+        <i class="menu-arrow"></i>
+      </a>
+
+      <div class="collapse submenu-compact {% if urln == 'read_produksi' or urln == 'read_pallet'%}show{% endif %}"
+          id="menu-produksi">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'read_produksi' %}active{% endif %}"
+              href="{% url 'read_produksi' %}">
+              Data Produksi
+            </a>
+          </li>
+          {% if is_ppic or is_produksi %}
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'read_pallet' %}active{% endif %}"
+              href="{% url 'read_pallet' %}">
+              Status Pallet
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </li>
+    {% endif %}
+
+    {% if is_ppic or is_finance %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'read_pengiriman' %}">
+        <i class="ti-truck menu-icon"></i>
+        <span class="menu-title">Pengiriman</span>
+      </a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-link"
+         data-toggle="collapse"
+         href="#menu-stok-opname"
+         aria-expanded="{% if urln == 'read_stok_opname' or urln == 'read_so_bahan' or urln == 'read_so_produk' %}true{% else %}false{% endif %}"
+         aria-controls="menu-stok-opname">
+        <i class="icon-clipboard menu-icon"></i>
+        <span class="menu-title">Stok Opname</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse submenu-compact {% if urln == 'read_stok_opname'  or urln == 'read_so_bahan' or urln == 'read_so_produk'%}show{% endif %}"
+           id="menu-stok-opname">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'read_stok_opname' %}active{% endif %}"
+               href="{% url 'read_stok_opname' %}">
+              Data Stok Opname
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'read_so_bahan' %}active{% endif %}"
+               href="{% url 'read_so_bahan' %}">
+              Stok Opname Bahan
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'read_so_produk' %}active{% endif %}"
+               href="{% url 'read_so_produk' %}">
+              Stok Opname Produk
+            </a>
+          </li>
+        </ul>
+      </div>
+    </li>
+    {% endif %}
+    
+
+    {% if is_ppic or is_manajer %}
+    <li class="nav-item">
+      <a class="nav-link"
+        data-toggle="collapse"      
+        href="#menu-laporan"
+        aria-expanded="{% if urln == 'laporan_rekapitulasi_stok' or urln == 'laporan_aliran_barang' or urln == "laporan_pengiriman" or urln == "laporan_stok_opname" %}true{% else %}false{% endif %}"
+        aria-controls="menu-laporan">
+        <i class="icon-columns menu-icon"></i>
+        <span class="menu-title">Laporan</span>
+        <i class="menu-arrow"></i>
+      </a>
+
+      <div class="collapse submenu-compact {% if urln == 'laporan_rekapitulasi_stok' or urln == 'laporan_aliran_barang' or urln == 'laporan_pengiriman' or urln == 'laporan_stok_opname' %}show{% endif %}"
+          id="menu-laporan">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'laporan_rekapitulasi_stok' %}active{% endif %}"
+              href="{% url 'laporan_rekapitulasi_stok' %}">
+              Laporan Rekapitulasi Stok
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'laporan_aliran_barang' %}active{% endif %}"
+              href="{% url 'laporan_aliran_barang' %}">
+              Laporan Aliran Barang
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'laporan_pengiriman' %}active{% endif %}"
+              href="{% url 'laporan_pengiriman' %}">
+              Laporan Pengiriman
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if urln == 'laporan_stok_opname' %}active{% endif %}"
+              href="{% url 'laporan_stok_opname' %}">
+              Laporan Stok Opname
+            </a>
+          </li>
+        </ul>
+
+    {% endif %}
+  </ul>
+</nav>

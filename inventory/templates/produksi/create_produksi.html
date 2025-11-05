@@ -1,0 +1,240 @@
+{% extends "base/base.html" %}
+{% block content %}
+{% load l10n %}
+
+<div class="page-header">
+  <h3 class="page-title">Create Data Produksi</h3>
+</div>
+
+<div class="row">
+  <div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <form class="form-sample" method="post">
+          {% csrf_token %}
+
+          <h4 class="card-title mb-4">Produksi</h4>
+
+          <!-- Tanggal Produksi -->
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label">Tanggal Produksi</label>
+            <div class="col-sm-9">
+              <input class="form-control" type="date" name="tanggal_produksi" required>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <h4 class="card-title mb-3">Detail Produksi</h4>
+
+          <!-- Container detail -->
+          <div id="detail_produksi">
+            <!-- Detail 1 -->
+            <div class="detail-group border rounded p-3 mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0 font-weight-bold">Detail Produksi <span class="urut">1</span></h6>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleterow(this)">
+                  <i class="ti-trash"></i> Hapus
+                </button>
+              </div>
+
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Nama Produk</label>
+                <div class="col-sm-9">
+                  <select class="form-control produk" name="nama_produk" required>
+                    <option value="" selected disabled>Pilih produk…</option>
+                    {% for i in produkobj %}
+                      <option value="{{ i.id_produk }}">{{ i }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Nama Bahan Baku</label>
+                <div class="col-sm-9">
+                  <select class="form-control bahan" name="nama_bahan" required>
+                    <option value="" selected disabled>Pilih bahan…</option>
+                    {% for i in bahanobj %}
+                      <option value="{{ i.id_bahan }}">{{ i }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Kuantitas Produk Dihasilkan</label>
+                <div class="col-sm-9">
+                  {% localize off %}
+                  <input class="form-control js-thousand" inputmode="numeric" type="text" name="jumlah_produk" min="0" step="1" required>
+                  {% endlocalize %}
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Kuantitas Bahan Baku Digunakan</label>
+                <div class="col-sm-9">
+                  {% localize off %}
+                  <input class="form-control js-thousand" inputmode="numeric" type="text" name="jumlah_bahan_keluar" min="0" step="1" required>
+                  {% endlocalize %}
+                </div>
+              </div>
+
+              {% if is_ppic or is_qc %}
+              <!-- PPIC boleh isi QC saat create -->
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Jumlah Reject</label>
+                <div class="col-sm-9">
+                  {% localize off %}
+                  <input class="form-control js-thousand" inputmode="numeric" type="text" name="jumlah_reject" min="0" step="1">
+                  {% endlocalize %}
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Jumlah Finished Goods</label>
+                <div class="col-sm-9">
+                  {% localize off %}
+                  <input class="form-control js-thousand" inputmode="numeric" type="text" name="jumlah_fg" min="0" step="1">
+                  {% endlocalize %}
+                </div>
+              </div>
+              {% endif %}
+
+              {% if is_ppic or is_qc %}
+              {% else %}
+              <!-- PRODUKSI tidak boleh isi; kirim 0 agar getlist() tetap sejajar -->
+              <input type="hidden" name="jumlah_reject" value="0">
+              <input type="hidden" name="jumlah_fg" value="0">
+              {% endif %}
+
+            </div>
+            <!-- /Detail 1 -->
+          </div>
+
+          <!-- Tombol aksi -->
+          <div class="d-flex justify-content-between mt-4">
+            <button type="button" class="btn btn-primary btn-icon-text" onclick="tambahDetail()">
+              <i class="ti-plus mr-1"></i> Tambah Detail
+            </button>
+
+            <div>
+              <a href="{% url 'read_produksi' %}" class="btn btn-light mr-2">Batal</a>
+              <button type="submit" class="btn btn-success btn-icon-text">
+                <i class="ti-check mr-1"></i> Simpan
+              </button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script -->
+<script>
+  // Flag role dari server untuk logika field QC
+  const IS_PPIC = {{ is_ppic|yesno:"true,false" }};
+
+  function tambahDetail() {
+    const container = document.getElementById('detail_produksi');
+    const jumlah = container.querySelectorAll('.detail-group').length + 1;
+
+    let qcFields = '';
+    if (IS_PPIC) {
+      qcFields = `
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label">Jumlah Reject</label>
+          <div class="col-sm-9">
+            {% localize off %}
+            <input class="form-control js-thousand" type="number" name="jumlah_reject" min="0" step="1">
+            {% endlocalize %}
+            </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label">Jumlah Finished Goods</label>
+          <div class="col-sm-9">
+            {% localize off %}
+            <input class="form-control js-thousand" type="number" name="jumlah_fg" min="0" step="1">
+            {% endlocalize %}
+          </div>
+        </div>`;
+    } else {
+      // produksi: kirim 0 supaya jumlah list sejajar
+      qcFields = `
+        <input type="hidden" name="jumlah_reject" value="0">
+        <input type="hidden" name="jumlah_fg" value="0">`;
+    }
+
+    const baris = document.createElement('div');
+    baris.className = 'detail-group border rounded p-3 mb-3';
+    baris.innerHTML = `
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0 font-weight-bold">Detail Produksi <span class="urut">${jumlah}</span></h6>
+        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleterow(this)">
+          <i class="ti-trash"></i> Hapus
+        </button>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Nama Produk</label>
+        <div class="col-sm-9">
+          <select class="form-control produk" name="nama_produk" required>
+            <option value="" selected disabled>Pilih produk…</option>
+            {% for i in produkobj %}
+              <option value="{{ i.id_produk }}">{{ i }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Nama Bahan Baku</label>
+        <div class="col-sm-9">
+          <select class="form-control bahan" name="nama_bahan" required>
+            <option value="" selected disabled>Pilih bahan…</option>
+            {% for i in bahanobj %}
+              <option value="{{ i.id_bahan }}">{{ i }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Kuantitas Produk Dihasilkan</label>
+        <div class="col-sm-9">
+          <input class="form-control js-thousand" type="text" inputmode="numeric" name="jumlah_produk" min="0" step="1" required>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Kuantitas Bahan Baku Digunakan</label>
+        <div class="col-sm-9">
+          <input class="form-control js-thousand" type="text" inputmode="numeric" name="jumlah_bahan_keluar" min="0" step="1" required>
+        </div>
+      </div>
+
+      ${qcFields}
+    `;
+    container.appendChild(baris);
+    updateDetailNumbers();
+  }
+
+  function deleterow(button) {
+    const container = document.getElementById('detail_produksi');
+    const groups = container.querySelectorAll('.detail-group');
+    if (groups.length > 1) {
+      button.closest('.detail-group').remove();
+      updateDetailNumbers();
+    } else {
+      alert('Minimal harus ada satu detail produksi.');
+    }
+  }
+
+  function updateDetailNumbers() {
+    const details = document.querySelectorAll('#detail_produksi .detail-group .urut');
+    details.forEach((el, idx) => { el.textContent = (idx + 1); });
+  }
+</script>
+{% endblock %}

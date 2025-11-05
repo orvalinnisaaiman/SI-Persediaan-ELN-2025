@@ -1,0 +1,33 @@
+{% extends "base/base.html" %}
+{% load l10n %}
+
+{% block content %}
+<div class="page-header"><h3 class="page-title">Tambah Kebutuhan Pallet</h3></div>
+<div class="card"><div class="card-body">
+  <form method="post">{% csrf_token %}
+    <div class="form-group">
+      <label>Bahan Pembantu</label>
+      <select class="form-control" name="nama_bahan" required>
+        <option value="" disabled selected>— pilih bahan —</option>
+        {% for b in bahanobj %}<option value="{{ b.id_bahan }}">{{ b }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Kebutuhan (mm per pallet)</label>
+      {% localize off %}
+      <input type="text" inputmode="numeric" class="form-control js-thousand" name="kebutuhan" min="1" step="1" required>
+      {% endlocalize %}
+    </div>
+    <div class="form-group">
+      <label>Ukuran (mm per roll)</label>
+      {% localize off %}
+      <input type="text" inputmode="numeric" class="form-control js-thousand" name="mm_per_roll" min="1" step="1" required>
+      {% endlocalize %}
+    </div>
+    <div class="mt-3 d-flex gap-2">
+      <a href="{% url 'read_kebutuhan_pallet' %}" class="btn btn-light">Batal</a>
+      <button class="btn btn-success"><i class="ti-check mr-1"></i> Simpan</button>
+    </div>
+  </form>
+</div></div>
+{% endblock %}

@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Laporan Rekapitulasi Stok</title>
+  <style>
+    @page { size: A4; margin: 18mm 14mm; }
+    body { font-family: sans-serif; font-size: 11px; }
+    h1 { font-size: 18px; margin: 0 0 4mm 0; }
+    h2 { font-size: 14px; margin: 6mm 0 2mm 0; }
+    .meta { margin-bottom: 6mm; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #444; padding: 6px 8px; }
+    th { background: #f2f2f2; }
+    td.num { text-align: right; }
+    .strong { font-weight: bold; }
+    .section { margin-top: 6mm; }
+  </style>
+</head>
+<body>
+  <h1>Laporan Rekapitulasi Stok</h1>
+  {% if start_date and end_date %}
+    <div class="meta">Periode: {{ start_date }} s.d. {{ end_date }}</div>
+  {% endif %}
+
+  <div class="section">
+    <h2>Produk</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:40px;">No</th>
+          <th>Nama Produk</th>
+          <th style="width:80px;">Stok Awal</th>
+          <th style="width:80px;">Masuk</th>
+          <th style="width:80px;">Keluar</th>
+          <th style="width:95px;">Penyesuaian</th>
+          <th style="width:85px;">Stok Akhir</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in produk_data %}
+        <tr>
+          <td>{{ row.no }}</td>
+          <td>{{ row.nama }}</td>
+          <td class="num">{{ row.stok_awal }}</td>
+          <td class="num">{{ row.masuk }}</td>
+          <td class="num">{{ row.keluar }}</td>
+          <td class="num">{{ row.penyesuaian }}</td>
+          <td class="num strong">{{ row.stok_akhir }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7">Tidak ada data produk di periode ini.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Bahan Baku</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:40px;">No</th>
+          <th>Nama Bahan</th>
+          <th style="width:80px;">Stok Awal</th>
+          <th style="width:80px;">Masuk</th>
+          <th style="width:80px;">Keluar</th>
+          <th style="width:95px;">Penyesuaian</th>
+          <th style="width:85px;">Stok Akhir</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in bahan_baku_data %}
+        <tr>
+          <td>{{ row.no }}</td>
+          <td>{{ row.nama }}</td>
+          <td class="num">{{ row.stok_awal }}</td>
+          <td class="num">{{ row.masuk }}</td>
+          <td class="num">{{ row.keluar }}</td>
+          <td class="num">{{ row.penyesuaian }}</td>
+          <td class="num strong">{{ row.stok_akhir }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7">Tidak ada data bahan baku di periode ini.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
+  <div class="section">
+    <h2>Bahan Pembantu</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:40px;">No</th>
+          <th>Nama Bahan</th>
+          <th style="width:80px;">Stok Awal</th>
+          <th style="width:80px;">Masuk</th>
+          <th style="width:80px;">Keluar</th>
+          <th style="width:95px;">Penyesuaian</th>
+          <th style="width:85px;">Stok Akhir</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in bahan_data %}
+        <tr>
+          <td>{{ row.no }}</td>
+          <td>{{ row.nama }}</td>
+          <td class="num">{{ row.stok_awal }}</td>
+          <td class="num">{{ row.masuk }}</td>
+          <td class="num">{{ row.keluar }}</td>
+          <td class="num">{{ row.penyesuaian }}</td>
+          <td class="num strong">{{ row.stok_akhir }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7">Tidak ada data bahan pembantu di periode ini.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

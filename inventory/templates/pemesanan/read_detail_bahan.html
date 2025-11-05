@@ -1,0 +1,199 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Daftar Pemesanan Bahan</h3>
+</div>
+
+<div class="card">
+  <div class="card-body">
+
+    <!-- FILTER -->
+    <form method="get" class="mb-3">
+      <div class="row g-2 align-items-end">
+        <div class="col-md-2">
+          <label class="form-label">Tanggal Mulai</label>
+          <input type="date" class="form-control" name="tmin" value="{{ tmin|default_if_none:'' }}">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Tanggal Akhir</label>
+          <input type="date" class="form-control" name="tmax" value="{{ tmax|default_if_none:'' }}">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Supplier</label>
+          <select class="form-control" name="supplier">
+            <option value="">— Semua Supplier —</option>
+            {% for s in supplierobj %}
+              <option value="{{ s.id_supplier }}" {% if supplier_sel == s.id_supplier|stringformat:"s" %}selected{% endif %}>
+                {{ s.nama_supplier }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Bahan</label>
+          <select class="form-control" name="bahan" >
+            <option value="">— Semua Bahan —</option>
+            {% for b in bahanobj %}
+              <option value="{{ b.id_bahan }}" {% if bahan_sel == b.id_bahan|stringformat:"s" %}selected{% endif %}>
+                {{ b }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mt-2 d-flex align-items-center">
+          <button type="submit" class="btn btn-primary btn-sm me-2" style="margin-right: 8px" >
+            <i class="ti-search mr-1"></i> Filter
+          </button>
+          <a href="{% url 'read_detail_bahan' %}" class="btn btn-light btn-sm me-2" style="margin-right: 3px">
+            <i class="ti-reload mr-1"></i> Reset
+          </a>
+        </div>
+      </div>
+    </form>
+
+    <!-- TABEL -->
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th class="text-center">No</th>
+            <th class="text-center">Tanggal</th>
+            {% comment %} <th class="text-center">No Dokumen</th> {% endcomment %}
+            <th class="text-center">Supplier</th>
+            <th>Bahan</th>
+            <th class="text-center">Kuantitas</th>
+            {% if is_ppic %}<th class="text-center">Action</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in page_obj.object_list %}
+          <tr>
+            <td class="text-center">
+              {{ page_obj.start_index|add:forloop.counter0 }}
+            </td>
+            <td class="text-center">{{ d.id_pemesanan.tanggal_pemesanan }}</td>
+            <td class="text-center">{{ d.id_pemesanan.id_supplier.nama_supplier }}</td>
+            <td>{{ d.id_bahan }}</td>
+            <td class="text-center">{{ d.jumlah_bahan_masuk }}</td>
+
+            {% if is_ppic %}
+            <td class="text-center">
+              <a href="{% url 'update_detail_pemesanan_bahan' d.id_detail_pemesanan %}" class="btn btn-xs btn-outline-primary">
+                <i class="ti-pencil"></i> Edit
+              </a>
+              <button type="button"
+                      class="btn btn-xs btn-outline-danger btn-delete"
+                      data-url="{% url 'delete_detail_pemesanan_bahan' d.id_detail_pemesanan %}"
+                      data-nama="Detail Bahan #{{ d.id_detail_pemesanan }} (Pemesanan #{{ d.id_pemesanan.id_pemesanan }})">
+                <i class="ti-trash"></i> Hapus
+              </button>
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="{% if is_ppic %}6{% else %}5{% endif %}" class="text-center text-muted">
+              Tidak ada data untuk filter saat ini.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PAGINATION -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="mt-3">
+      <ul class="pagination mb-0">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link"
+             href="?page={{ page_obj.previous_page_number }}&tmin={{ tmin }}&tmax={{ tmax }}&supplier={{ supplier_sel }}&bahan={{ bahan_sel }}">«</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">«</span></li>
+        {% endif %}
+
+        <li class="page-item disabled"><span class="page-link">
+          Hal {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+        </span></li>
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link"
+             href="?page={{ page_obj.next_page_number }}&tmin={{ tmin }}&tmax={{ tmax }}&supplier={{ supplier_sel }}&bahan={{ bahan_sel }}">»</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">»</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+
+  </div>
+</div>
+
+<!-- MODAL DELETE -->
+<div class="modal fade" id="confirmDelete" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3">
+      <form id="deleteForm" method="post">
+        {% csrf_token %}
+        <h4 class="title mb-2"></h4>
+        <p class="text-muted mb-0">Data yang dihapus tidak bisa dikembalikan.</p>
+        <div class="mt-3 d-flex gap-2">
+          <button type="submit" class="btn btn-danger">Ya, hapus!</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  if (window.__bindDeleteOnceUniversal) return;
+  window.__bindDeleteOnceUniversal = true;
+
+  var modalEl = document.getElementById('confirmDelete');
+  var formEl  = document.getElementById('deleteForm');
+  var titleEl = modalEl.querySelector('.title');
+
+  function showModal(){
+    try {
+      if (window.bootstrap && bootstrap.Modal) {
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();   // BS5
+      } else if (window.jQuery) {
+        jQuery(modalEl).modal('show');                          // BS4
+      } else {
+        alert('Konfirmasi tidak bisa dibuka (library modal tidak ditemukan).');
+      }
+    } catch (e) {
+      if (window.jQuery) jQuery(modalEl).modal('show'); else alert('Konfirmasi gagal dibuka.');
+    }
+  }
+
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('.btn-delete');
+    if (!btn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    var url = btn.dataset.url;
+    if (!url || url === 'null' || /\/null\/?$/.test(url)) {
+      console.error('Delete URL invalid:', btn);
+      alert('Gagal membuka konfirmasi: ID tidak ditemukan.');
+      return;
+    }
+    formEl.action = url;  // <- set action POST ke endpoint delete
+    titleEl.textContent = 'Yakin ingin menghapus ' + (btn.dataset.nama || 'data ini') + '?';
+    showModal();
+  }, true);
+})();
+</script>
+
+{% endblock %}

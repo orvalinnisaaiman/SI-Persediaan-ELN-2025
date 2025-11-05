@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Laporan Pengiriman</title>
+  <style>
+    @page { size: A4 landscape; margin: 10mm; }
+    body { font-family: sans-serif; font-size: 10px; }
+    h1 { font-size: 16px; margin: 0 0 6mm 0; }
+    h2 { font-size: 13px; margin: 6mm 0 3mm 0; }
+
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { border: 1px solid #444; padding: 2px 3px; vertical-align: top; }
+    th { background: #f2f2f2; }
+    td, th { white-space: normal; word-break: break-word; overflow-wrap: anywhere; hyphens: auto; }
+
+    thead { display: table-header-group; }
+    tfoot { display: table-footer-group; }
+    tr { page-break-inside: avoid; }
+
+    .center { text-align: center; }
+    .num { text-align: right; }
+
+    /* ===== LEBAR KOLOM DETAIL (<= 277mm area konten landscape) =====
+       Tetap konservatif agar nyaman dibaca dan aman page-break.
+       Total fixed: 24+20+44+48+24+18+22+20 = 220mm
+       Kolom "Keterangan" auto mengisi sisa.
+    */
+    .w-tgl { width: 24mm; }  /* Tanggal */
+    .w-no  { width: 20mm; }  /* No SJ */
+    .w-cus { width: 44mm; }  /* Customer */
+    .w-pro { width: 48mm; }  /* Produk */
+    .w-jen { width: 24mm; }  /* Jenis */
+    .w-sat { width: 18mm; }  /* Satuan */
+    .w-qty { width: 22mm; }  /* Qty */
+  
+
+    /* Mini table ringkasan */
+    .mini th, .mini td { padding: 2px 3px; }
+  </style>
+</head>
+<body class="pdf-compact">
+  <h1>Laporan Pengiriman</h1>
+  <div style="margin-bottom:6mm;">Periode: {{ start_date }} s.d. {{ end_date }}</div>
+
+  <h2>Detail Pengiriman</h2>
+  <table>
+    <thead>
+      <tr>
+        <th class="center w-tgl">Tanggal</th>
+        <th class="center w-no">No</th>
+        <th class="w-cus">Customer</th>
+        <th class="w-pro">Produk</th>
+        <th class="center w-jen">Jenis</th>
+        <th class="center w-sat">Satuan</th>
+        <th class="num w-qty">Kuantitas</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if rows %}
+        {% for r in rows %}
+          <tr>
+            <td class="center">{{ r.tanggal }}</td>
+            <td class="center">{{ r.no_sj }}</td>
+            <td>{{ r.customer }}</td>
+            <td>
+              {{ r.produk }}
+              {% if r.ket %}
+                <div style="font-size:9px;color:#555;margin-top:2px;">{{ r.ket }}</div>
+              {% endif %}
+            </td>
+            <td class="center">{{ r.jenis }}</td>
+            <td class="center">{{ r.satuan }}</td>
+            <td class="num"><strong>{{ r.qty }}</strong></td>
+        
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="9">Tidak ada data untuk periode ini.</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <!-- ======== MINI-TABEL RINGKASAN CAN ======== -->
+  <h2>Ringkasan Pengiriman per Jenis CAN</h2>
+  <table class="mini">
+    <thead>
+      <tr>
+        <th>Jenis</th>
+        <th class="num">Total Qty (pcs)</th>
+        <th class="num">Target Bulanan</th>
+        <th class="num">% Pencapaian</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>CAN 307</td><td class="num">{{ mini.qty_307 }}</td><td class="num">—</td><td class="num">—</td></tr>
+      <tr><td>CAN 211</td><td class="num">{{ mini.qty_211 }}</td><td class="num">—</td><td class="num">—</td></tr>
+      <tr>
+        <td><strong>CAN 307 + CAN 211</strong></td>
+        <td class="num"><strong>{{ mini.qty_307_211 }}</strong></td>
+        <td class="num">{{ mini.target_307_211 }}</td>
+        <td class="num">{{ mini.pct_307_211 }}%</td>
+      </tr>
+      <tr><td>CAN 311</td><td class="num">{{ mini.qty_311 }}</td><td class="num">{{ mini.target_311 }}</td><td class="num">{{ mini.pct_311 }}%</td></tr>
+      <tr><td>CAN 202</td><td class="num">{{ mini.qty_202 }}</td><td class="num">{{ mini.target_202 }}</td><td class="num">{{ mini.pct_202 }}%</td></tr>
+      <tr>
+        <td><strong>TOTAL 4 JENIS</strong></td>
+        <td class="num"><strong>{{ mini.qty_total_4 }}</strong></td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

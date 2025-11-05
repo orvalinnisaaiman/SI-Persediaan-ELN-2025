@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Sistem Persediaan ELN</title>
+  <link rel="icon" href="{% static 'images/logo_eln.webp' %}">
+  <link rel="stylesheet" href="{% static 'vendors/css/vendor.bundle.base.css' %}">
+  <link rel="stylesheet" href="{% static 'vendors/ti-icons/css/themify-icons.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --eln-primary: #7C9070;     /* sage green utama */
+      --eln-primary-light: #9CA777; /* olive muda */
+      --eln-primary-dark: #5A664E;  /* hijau tua */
+      --eln-accent: #E7EDE1;        /* pastel lembut */
+    }
+
+    body {
+      background-color: var(--eln-accent);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: "Poppins", sans-serif;
+    }
+
+    .login-card {
+      background: linear-gradient(180deg, var(--eln-primary) 0%, var(--eln-primary-dark) 100%);
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      width: 360px;
+      color: #fff;
+      padding: 2rem;
+    }
+
+    .login-card h3 {
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      color: #fff;
+    }
+
+    .login-card p {
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      opacity: 0.9;
+      color: #f2f2f2;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #f2f2f2;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 0.9rem;
+      background: #fff;
+      color: #2f2f2f;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+      border: 1px solid var(--eln-primary-light);
+      box-shadow: 0 0 0 0.15rem rgba(124,144,112,0.3);
+    }
+
+    .form-control::placeholder {
+      color: #b8b8b8;
+    }
+
+    .btn-login {
+      background-color: var(--eln-primary-light);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      width: 100%;
+      padding: 0.75rem;
+      font-weight: 600;
+      transition: 0.2s ease;
+      box-sizing: border-box;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-login:hover {
+      background-color: var(--eln-primary-dark);
+    }
+
+    .alert {
+      background: #f9faf8;
+      color: var(--eln-primary-dark);
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      border: 1px solid #dfe6d8;
+    }
+
+    /* ikon login */
+    .btn-login i {
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-card">
+    <h3>Selamat Datang</h3>
+    <p>Silakan login untuk masuk ke sistem</p>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form action="{% url 'performlogin' %}" method="POST">
+      {% csrf_token %}
+      <label for="username" class="form-label">Username</label>
+      <input type="text" name="username" class="form-control" placeholder="Masukkan username" required>
+
+      <label for="password" class="form-label">Password</label>
+      <input type="password" name="password" class="form-control" placeholder="Masukkan password" required>
+
+      <button type="submit" class="btn-login">
+        <i class="ti-unlock"></i> Login
+      </button>
+    </form>
+  </div>
+</body>
+</html>

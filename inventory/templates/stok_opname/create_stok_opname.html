@@ -1,0 +1,135 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+<div class="page-header">
+  <h3 class="page-title">Create Data Stok Opname</h3>
+</div>
+
+<div class="row">
+  <div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <form class="form-sample" method="post" autocomplete="off">
+          {% csrf_token %}
+
+          <h4 class="card-title mb-4">Stok Opname</h4>
+
+          <!-- Tanggal -->
+          <div class="form-group row">
+            <label class="col-sm-3 col-form-label">Tanggal Stok Opname</label>
+            <div class="col-sm-9">
+              <input class="form-control" type="date" name="tanggal_stok_opname" required>
+            </div>
+          </div>
+
+          <hr class="my-4">
+          <h4 class="card-title mb-3">Detail Stok Opname</h4>
+
+          <!-- Tombol tambah -->
+          <div class="mb-3 d-flex gap-2">
+            <button type="button" class="btn btn-outline-warning btn-icon-text" onclick="tambahDetailBahan()">
+              <i class="ti-plus"></i> Tambah Detail Bahan
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-icon-text" onclick="tambahDetailProduk()">
+              <i class="ti-plus"></i> Tambah Detail Produk
+            </button>
+          </div>
+
+          <!-- Container detail -->
+          <div id="container-bahan"></div>
+          <div id="container-produk" class="mt-3"></div>
+
+          <!-- Aksi -->
+          <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'read_stok_opname' %}" class="btn btn-light mr-2">Batal</a>
+            <button type="submit" class="btn btn-success btn-icon-text"><i class="ti-check mr-1"></i> Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script: sama pola dengan create_pemesanan -->
+<script>
+  function rowBahan(idx){
+    return `
+      <div class="detail-group border rounded p-3 mb-3" data-kind="bahan">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0 font-weight-bold">Detail Bahan <span class="urut">${idx}</span></h6>
+          <button type="button" class="btn btn-sm btn-outline-danger" onclick="hapusRow(this)">
+            <i class="ti-trash"></i> Hapus
+          </button>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label">Nama Bahan</label>
+          <div class="col-sm-9">
+            <select class="form-control" name="bahan_id[]" required>
+              <option value="" disabled selected>Pilih bahan…</option>
+              {% for b in bahanobj %}
+                <option value="{{ b.id_bahan }}">{{ b.nama_bahan }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label">Stok Fisik</label>
+          <div class="col-sm-9">
+            <input class="form-control text-left" type="number" name="bahan_fisik[]" min="0" required>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function rowProduk(idx){
+    return `
+      <div class="detail-group border rounded p-3 mb-3" data-kind="produk">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0 font-weight-bold">Detail Produk <span class="urut">${idx}</span></h6>
+          <button type="button" class="btn btn-sm btn-outline-danger" onclick="hapusRow(this)">
+            <i class="ti-trash"></i> Hapus
+          </button>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label">Nama Produk</label>
+          <div class="col-sm-9">
+            <select class="form-control" name="produk_id[]" required>
+              <option value="" disabled selected>Pilih produk…</option>
+              {% for p in produkobj %}
+                <option value="{{ p.id_produk }}">{{ p.nama_produk }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label">Stok Fisik</label>
+          <div class="col-sm-9">
+            <input class="form-control text-right" type="number" name="produk_fisik[]" min="0" required>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renumber(container){
+    container.querySelectorAll('.detail-group .urut').forEach((el, i) => el.textContent = i + 1);
+  }
+  function tambahDetailBahan(){
+    const c = document.getElementById('container-bahan');
+    const idx = c.querySelectorAll('[data-kind="bahan"]').length + 1;
+    c.insertAdjacentHTML('beforeend', rowBahan(idx));
+    renumber(c);
+  }
+  function tambahDetailProduk(){
+    const c = document.getElementById('container-produk');
+    const idx = c.querySelectorAll('[data-kind="produk"]').length + 1;
+    c.insertAdjacentHTML('beforeend', rowProduk(idx));
+    renumber(c);
+  }
+  function hapusRow(btn){
+    const group = btn.closest('.detail-group');
+    const container = group.parentElement;
+    group.remove();
+    renumber(container);
+  }
+</script>
+{% endblock %}

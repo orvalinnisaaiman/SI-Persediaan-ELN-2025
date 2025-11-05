@@ -1,0 +1,191 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="page-header">
+  <h3 class="page-title">Status Pallet & Wrapping</h3>
+</div>
+
+<!-- ====================== FILTER FORM ====================== -->
+<form method="get" class="mb-4">
+  <div class="row g-2">
+    <div class="col-md-3">
+      <label class="form-label mb-1">Tanggal Mulai</label>
+      <input type="date" class="form-control" name="tmin" value="{{ tmin|default_if_none:'' }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label mb-1">Tanggal Akhir</label>
+      <input type="date" class="form-control" name="tmax" value="{{ tmax|default_if_none:'' }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label mb-1">Produk</label>
+      <select class="form-control" name="produk">
+        <option value="">— Semua Produk —</option>
+        {% for pr in produkobj %}
+          <option value="{{ pr.id_produk }}"
+                  {% if produk_sel == pr.id_produk|stringformat:"s" %}selected{% endif %}>
+            {{ pr.nama_produk }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary me-2">
+        <i class="ti-search me-1"></i> Filter
+      </button>
+      <a href="{% url 'read_pallet' %}" class="btn btn-light">
+        <i class="ti-reload me-1"></i> Reset
+      </a>
+    </div>
+  </div>
+</form>
+
+<div class="row">
+  <!-- ====================== PALLET TERBUKA ====================== -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h4 class="card-title mb-3">Pallet Terbuka (Belum Penuh)</h4>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+              <tr class="text-center">
+                <th>Produk</th>
+                <th>Sisa Unit Terisi</th>
+                <th>Tanggal Update</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for b in pallet_open %}
+              <tr>
+                <td>{{ b.id_produk.nama_produk }}</td>
+                <td class="text-end">{{ b.sisa_item }}</td>
+                <td class="text-center">{{ b.tanggal_update }}</td>
+                <td class="text-center">
+                  {% if b.sisa_item > 0 %}
+                  <form method="post" action="{% url 'wrap_manual' b.id_produk.id_produk %}">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-outline-success">
+                      <i class="ti-check me-1"></i> Manual Wrap
+                    </button>
+                  </form>
+                  {% else %}
+                  <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4" class="text-center text-muted">Tidak ada pallet terbuka.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== RIWAYAT PALLET PENUH ====================== -->
+  <div class="col-lg-6">
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h4 class="card-title mb-3">Riwayat Pallet Penuh (Auto & Manual)</h4>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+              <tr class="text-center">
+                <th>Tanggal</th>
+                <th>Produk</th>
+                <th>Jumlah Pallet</th>
+                <th>Tipe Event</th>
+                <th>Konsumsi Bahan Pembantu (mm)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in riwayat_data %}
+              <tr>
+                <td class="text-center">{{ row.event.tanggal_event }}</td>
+                <td>{{ row.event.id_produk.nama_produk }}</td>
+                <td class="text-end">{{ row.event.jumlah_pallet_penuh }}</td>
+                <td class="text-center">
+                  {% if row.event.event_type == 'AUTO' %}
+                    <span class="badge bg-success">AUTO</span>
+                  {% else %}
+                    <span class="badge bg-warning text-dark">MANUAL</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if row.consum %}
+                    {% for c in row.consum %}
+                      <div>
+                        {{ c.bahan.nama_bahan }} :
+                        {{ c.per_pallet_mm }} × {{ row.event.jumlah_pallet_penuh }}
+                        = <strong>{{ c.total_mm }}</strong> mm
+                      </div>
+                    {% endfor %}
+                  {% else %}
+                    <span class="text-muted">Tidak ada data kebutuhan.</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="5" class="text-center text-muted">Belum ada riwayat pallet penuh.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h4 class="card-title mb-3">Riwayat Pallet Penuh (EOE)</h4>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+              <tr class="text-center">
+                <th>Tanggal</th>
+                <th>Produk</th>
+                <th>Jumlah Pallet</th>
+                <th>Konsumsi Bahan Pembantu (mm)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in riwayat_eoe %}
+              <tr>
+                <td class="text-center">{{ row.event.tanggal_event }}</td>
+                <td>{{ row.event.id_produk.nama_produk }}</td>
+                <td class="text-end">{{ row.event.jumlah_pallet_penuh }}</td>
+                <td>
+                  {% if row.consum %}
+                    {% for c in row.consum %}
+                      <div>
+                        {{ c.bahan.nama_bahan }} :
+                        {{ c.per_pallet_mm }} × {{ row.event.jumlah_pallet_penuh }}
+                        = <strong>{{ c.total_mm }}</strong> mm
+                      </div>
+                    {% endfor %}
+                  {% else %}
+                    <span class="text-muted">Tidak ada data kebutuhan.</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4" class="text-center text-muted">Belum ada riwayat EOE.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
