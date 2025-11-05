@@ -49,7 +49,7 @@ def loginview(request):
     
 def performlogin(request):
     if request.method != "POST":
-        return HttpResponse("Method not Allowed")
+        return redirect('login')
     else:
         username_login = request.POST['username']
         password_login = request.POST['password']
